@@ -1,0 +1,185 @@
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+</head>
+<body>
+    <h3>首页</h3>
+    <span  id="islogin"></span>
+     <a id="login_Or_out"></a>
+     <a id="toUserDetail"> 
+     </a>
+        <nav id = "category"></nav> 
+        
+        <span>-------博客文章------</span>   
+    <div id="result">
+    
+    </div>   
+
+</body>
+<script type="text/javascript">
+   jQuery(document).ready(function(){
+	/* ***********************************************************
+	      1.检查是否登录
+	                  主页                    
+	       ajax      
+	      **********************************************************
+	 */  
+	   $.ajax({
+		    type : "GET",  
+		    url : "http://localhost:8080/blog/islogin",
+            xhrFields : {withCredentials : true},
+	       success : function(result){//成功返回数据
+	       // 如果已登录	    	   	   
+	     if(result.success){
+	    		$("#islogin").html("已登录");
+	    		
+	    		//1.可以登出
+	    		$("#login_Or_out").html("<a id='tologinOut' href='#'>登出</a>");
+	    	   
+	    	    //2.可以查看详情
+	    	    $("#login_Or_out").append("<a id='toUserdetail' href='#'><img src='http://localhost:8080/blog"+result.data.userImage+"' width='80px' height='80px'/><span>查看详情</span></a>");
+	    		$("#toUserdetail").on("click",function(){
+	    		    window.location.href="userDetail.html?userId="+result.data.userId;
+	    		 });
+	    		
+	    		//登出的ajax绑定
+	    	  $("#tologinOut").on("click",function(){
+	    			$.ajax({	    				 		
+		    			   type : "GET",  
+		    			   url : "http://localhost:8080/blog/loginout",
+		    			   xhrFields : {withCredentials : true},
+		    		       success : function(result){	
+		    		    	   if(result.success){
+		    		    		   //刷新当前页面
+		    		    		   window.location.reload();
+		    		    	   }else{
+		    		    		   alert("登出失败")
+		    		    	   }
+		    		       },
+		    		       error : function(result){
+		    		    	    alert("登出ajax发送失败:"+result.responseText);
+		    		       }
+		    		   }); 
+	    			
+	    		});
+	        //如果还没有登录	    	    
+	    	   }else{
+	    	    $("#islogin").html("未登录");
+	    	    //q去登录
+	    	    $("#login_Or_out").html("<a href='login.html'>登录</a>");	    	    	    	   
+	    	    
+	    	    }	   
+	       },
+	       error : function(result){
+	    	    alert("登录ajax发送失败:"+result.responseText);
+	       }
+	   }); 
+	   
+	/* ***********************************************************
+	      2.加载全部博客文章信息	
+	                  主页                    
+	       ajax      
+	      **********************************************************
+	 */	   
+	   //发送ajax请求获取所有分类信息
+	   $.ajax({
+		   type : "GET",  
+		   url : "http://localhost:8080/blog/categories",		  
+	       success : function(result){//成功返回数据	    	   
+	    	   if(result.success){//后台返回成功
+	    		 //获取数据  
+		   	     var categoryList = result.data;
+	    	     //for循环拼接到分类category栏
+		    	  for(var i = 0;i<categoryList.length;i++){
+		    	   $("#category").append("<a data-id="+categoryList[i].categoryNum+" id="+"articleType"+categoryList[i].categoryNum+" href='#'>"+categoryList[i].categoryName+"</a> ");
+		    	 		    	  		    	   
+                  //为每个for循环a元素绑定点击事件
+                  //点击发送查看查看某类型的文章
+		    	   $("#articleType"+categoryList[i].categoryNum).on("click",function(e){
+		    		   $.ajax({
+		    			   type : "GET",  
+		    			   contentType : "application/x-www-form-urlencoded",
+		    			   url : "http://localhost:8080/blog/condition/articles",
+		    			   data:{
+		    				   "articleType" : $(this).data("id") ,
+		    				   "page" : 1		  
+		    			   },	    		
+		    		       success : function(result){//成功返回数据	    	   
+		    		    	   if(result.success){//后台返回成功
+		    		    		 //获取数据  
+		    			   	     var articleList = result.data.content;
+		    		    	    
+		    		    	      $("#result").html("");
+		    		       //for循环拼接article
+		    			  for(var i = 0;i<articleList.length;i++){
+		    		     $("#result").append(" <a href='otherUserDetail.html?userId="+articleList[i].userId+"'><img src='http://localhost:8080/blog"+articleList[i].userImage+"' width='80px' height='80px'/> \
+		    	       <span>"+articleList[i].userName+"</span></a> \
+		    	       <a href='#'>"+articleList[i].articleTitle+"</a> \
+		    	       <a href='#'>点赞数:"+articleList[i].articleStar+"</a> \
+		    	       <a href='#'>评论数:"+articleList[i].commentCount+"</a> \
+		    	       <a href='#'>"+articleList[i].createTime+"</a><br/>");
+		    			    	  }
+		    		    	   }else{
+		    			    		  alert("页面加载异常,请刷新试试");
+		    			    	  }
+		    		       },
+		    		       error : function(result){
+		    		    	    alert("登录ajax发送失败:"+result.responseText);
+		    		       }
+		    		   }); 
+		    	   });
+		    	   
+		    	   
+		    	   //-------------------------
+		    	  }
+	    	   }else{
+		    		  alert("页面加载异常,请刷新试试");
+		    	  }
+	       },
+	       error : function(result){
+	    	    alert("登录ajax发送失败:"+result.responseText);
+	       }
+	   });
+	   
+
+	/* ***********************************************************
+	      3.加载全部博客文章信息	
+	                  主页                    
+	       ajax      
+	      **********************************************************
+	 */
+     //发送ajax请求获取全部文章信息
+	   $.ajax({
+		   type : "GET",  
+		   contentType : "application/x-www-form-urlencoded",
+		   url : "http://localhost:8080/blog/condition/articles",
+		   data:{
+			   "page" : 1			  
+		   },
+	       success : function(result){//ajax成功返回数据	    	   
+	    	   if(result.success){//后台返回正确
+	    		 //获取数据  
+		   	     var articleList = result.data.content;
+	    	     //for循环拼接article
+		    	  for(var i = 0;i<articleList.length;i++){
+		    	   $("#result").append("  <a href='otherUserDetail.html?userId="+articleList[i].userId+"'><img src='http://localhost:8080/blog"+articleList[i].userImage+"' width='80px' height='80px'/> \
+		    	   <span>"+articleList[i].userName+"</span> </a> \
+		    	   <a href='#'>"+articleList[i].articleTitle+"</a> \
+		    	   <a href='#'>点赞数:"+articleList[i].articleStar+"</a> \
+		    	   <a href='#'>评论数:"+articleList[i].commentCount+"</a> \
+		    	    <a href='#'>"+articleList[i].createTime+"</a><br/>");
+		    	  }
+	    	   }else{
+		    		  alert("页面加载异常,请刷新试试");
+		    	  }
+	       },
+	       error : function(result){
+	    	    alert("登录ajax发送失败:"+result.responseText);
+	       }
+	   }); 
+	   
+	   
+   });
+</script>
+</html>

@@ -1,0 +1,22 @@
+#配置端口和工程目录
+server:
+  port: 8080
+  servlet:
+    context-path: /blog
+
+#配置数据库连接参数
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/blog?useUnicode=true&characterEncoding=utf8&useSSL=false
+    username: root
+    password: root
+#jpa现实语句    
+  jpa:
+    show-sql: true
+        
+#配置每页多少条数据
+pageSize: 3
+
+#配置图片文件位置
+imagePath: "F:/image/"

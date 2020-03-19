@@ -1,0 +1,52 @@
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+</head>
+<body>
+<h3>登录页</h3>
+    <input type="text" id = "username"/><br/>
+    <input type="text" id = "password"/><br/>
+    <input type="button" id="login" value="登录"/>
+    <a href="index.html">回主页</a>
+     <a href="phoneLogin.html">手机登录</a>
+      <a href="register.html">注册</a>
+    <br/>
+    <span id="result"></span>
+</body>
+<script type="text/javascript">
+   //页面加载完成
+   jQuery(document).ready(function(){
+	   //登录按钮绑定click事件
+	   $("#login").on("click",function(){
+		   $.ajax({
+			   type : "POST",
+			   contentType : "application/x-www-form-urlencoded",
+			   url : "http://localhost:8080/blog/login",
+			   data:{
+				   "username" : $("#username").val(),
+				   "password" : $("#password").val(),
+			   },
+			   xhrFields : {withCredentials : true},
+			   //ajax发送成功
+		       success : function(result){
+		    	 //登录跳转业务
+		    	 
+		    	 //我这里简单输出
+		    	 var resultString = JSON.stringify(result);
+		    	 $("#result").html(resultString);
+		    	
+		    	 //跳回主页
+		    	 window.location.href="index.html";
+		       },
+		       //ajax发送失败
+		       error : function(result){
+		    	    alert("登录ajax发送失败:"+result.responseText);
+		       }
+		   });
+	   });
+   });
+
+</script>
+
+</html>

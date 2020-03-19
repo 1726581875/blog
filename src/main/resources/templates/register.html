@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+</head>
+<body>
+<h3>注册页页</h3>
+ 设置用户名:<input type="text" id = "username"/><br/>
+    手机号:<input type="text" id = "userPhone"/>
+    <input type="button" id="submit1" value="获取验证码"/>
+    <span id="otpMsg"></span>
+    <br/>   
+    验证码:<input type="text" id = "otp"/><br/>
+   
+  密码:<input type="text" id = "password"/><br/>
+    <input type="button" id="submit2" value="注册"/><br/>
+    <a href="index.html">回主页</a>
+     <a href="phoneLogin.html">手机登录</a>
+      <a href="login.html">密码登录</a>
+    <br/>
+    <span id="result"></span>
+</body>
+<script type="text/javascript">
+   jQuery(document).ready(function(){
+	   
+	   //ajax获取登录验证码
+	   $("#submit1").on("click",function(){
+		   $.ajax({
+			   type : "POST",
+			   contentType : "application/x-www-form-urlencoded",
+			   url : "http://localhost:8080/blog/phone/getotp",
+			   data:{
+				   "userPhone" : $("#userPhone").val()			 
+			   },
+			   xhrFields : {withCredentials : true},
+		       success : function(result){
+		    	  if(result.success){		 
+		    	 alert("你的验证码:"+result.data.otpCode);
+		    	  }else{
+		    		  $("#otpMsg").html(result.msg);
+		    	  }
+		    	 
+		       },
+		       error : function(result){
+		    	    alert("登录ajax发送失败:"+result.responseText);
+		       }
+		   });
+	   });
+	   
+	   
+	   $("#submit2").on("click",function(){
+		   $.ajax({
+			   type : "POST",
+			   contentType : "application/x-www-form-urlencoded",
+			   url : "http://localhost:8080/blog/register",
+			   data:{
+				   "userPhone" : $("#userPhone").val(),
+				   "password" : $("#password").val(),
+				   "username" : $("#username").val(),
+				   "otp" : $("#otp").val(),
+			   },
+			   xhrFields : {withCredentials : true},
+		       success : function(result){		    	   	    		 
+		    	  var resultString = JSON.stringify(result);
+		    	  $("#result").html(resultString);
+		    	   
+		       },		      
+		       error : function(result){
+		    	    alert("登录ajax发送失败:"+result.responseText);
+		       }
+		   });
+	   });
+	   
+	   
+   });
+
+</script>
+
+</html>

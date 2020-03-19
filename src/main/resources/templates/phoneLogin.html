@@ -1,0 +1,93 @@
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+</head>
+<body>
+<h3>手机登录页</h3>
+<span  id="islogin"></span>
+    手机号:<input type="text" id = "userPhone"/>
+    <input type="button" id="submit1" value="获取验证码"/>
+    <span id="otpMsg"></span>
+    <br/>   
+    验证码:<input type="text" id = "otp"/><br/>
+    <input type="button" id="submit2" value="登录"/>
+    <a href="index.html">回主页</a>
+     <a href="login.html">密码登录</a>
+      <a href="register.html">注册</a>
+    <br/>
+    <span id="result"></span>
+</body>
+<script type="text/javascript">
+   jQuery(document).ready(function(){
+	   
+	   $.ajax({
+		    type : "GET",  
+		    url : "http://localhost:8080/blog/islogin",
+           xhrFields : {withCredentials : true},
+	       success : function(result){//成功返回数据	    	   
+	    	   if(result.success){
+	    		$("#islogin").html("已登录");	    		   
+	    	    }else{
+	    	    $("#islogin").html("未登录");	 
+	    	    }	   
+	       },
+	       error : function(result){
+	    	    alert("登录ajax发送失败:"+result.responseText);
+	       }
+	   }); 
+	   
+	   //ajax获取登录验证码
+	   $("#submit1").on("click",function(){
+		   $.ajax({
+			   type : "POST",
+			   contentType : "application/x-www-form-urlencoded",
+			   url : "http://localhost:8080/blog/phone/getotp",
+			   data:{
+				   "userPhone" : $("#userPhone").val()			 
+			   },
+			   xhrFields : {withCredentials : true},
+		       success : function(result){
+		    	  if(result.success){		 
+		    	 alert("你的验证码:"+JSON.stringify(result));
+		    	  }else{
+		    		  $("#otpMsg").html(result.msg);
+		    	  }
+		    	 
+		       },
+		       error : function(result){
+		    	    alert("登录ajax发送失败:"+result.responseText);
+		       }
+		   });
+	   });
+	   
+	   
+	   $("#submit2").on("click",function(){
+		   $.ajax({
+			   type : "POST",
+			   contentType : "application/x-www-form-urlencoded",
+			   url : "http://localhost:8080/blog/login/phone",
+			   data:{
+				   "userPhone" : $("#userPhone").val(),
+				   "otp" : $("#otp").val(),
+			   },
+			   xhrFields : {withCredentials : true},
+		       success : function(result){
+		    	 var resultString = JSON.stringify(result);
+		    	 $("#result").html(resultString);
+		    	 
+		    	//跳回主页
+		    	 window.location.href="index.html";
+		       },		      
+		       error : function(result){
+		    	    alert("登录ajax发送失败:"+result.responseText);
+		       }
+		   });
+	   });
+	   
+	   
+   });
+
+</script>
+
+</html>
