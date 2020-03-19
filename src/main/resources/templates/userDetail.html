@@ -61,7 +61,7 @@ function getQueryVariable(variable)
 		   $.ajax({
 			   type : "GET",
 			   contentType : "application/x-www-form-urlencoded",
-			   url : "http://localhost:8080/blog/condition/articles",
+			   url : "http://localhost:8080/blog/user/detail",
 			   data:{
 				   "userId" : getQueryVariable("userId")			 
 			   },
@@ -84,7 +84,7 @@ function getQueryVariable(variable)
 		 		   $.ajax({
 		 			   type : "GET",  
 		 			   contentType : "application/x-www-form-urlencoded",
-		 			   url : "http://localhost:8080/blog/user/articles",
+		 			   url : "http://localhost:8080/blog/condition/articles",
 		 			   data:{
 		 				   "userId": getQueryVariable("userId"),
 		 				   "page" : 1			  
