@@ -5,6 +5,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,6 +26,7 @@ import com.smallchili.blog.vo.Result;
 
 @RestController
 @CrossOrigin(allowCredentials = "true" ,allowedHeaders = "*")
+@RequestMapping("/comment")
 public class CommentController extends BaseController{
 
 	@Autowired
@@ -34,12 +36,12 @@ public class CommentController extends BaseController{
 	private ReplyService replyService;
 	
 	/**
-	 * 查找文章的评论并携带评论回复
+	 * 查找文章的所有评论并携带评论回复
 	 * @param articleId
 	 * @param page
 	 * @return
 	 */
-	@GetMapping("/article/comments")
+	@GetMapping("/comments")
 	private Object findAllCommentAndReply(@RequestParam("articleId") Integer articleId,
 			                        @RequestParam(value = "page",defaultValue = "1") Integer page){
 		
@@ -49,7 +51,16 @@ public class CommentController extends BaseController{
 	}
 	
 	
-	@PostMapping("insert/comment")
+	/**
+	 * 插入一条评论
+	 * @param articleId
+	 * @param commentId
+	 * @param userId
+	 * @param toUserId
+	 * @param content
+	 * @return
+	 */
+	@PostMapping("/insert")
 	public Object insertComment(@RequestParam("articleId") Integer articleId,
 			             @RequestParam("commentId") Integer commentId,
 			             @RequestParam("userId") Integer userId,
@@ -90,13 +101,23 @@ public class CommentController extends BaseController{
 	
 	
 	
-	@PostMapping("delete/comment")
+	/**
+	 * 删除评论
+	 * @param commentId
+	 * @return
+	 */
+	@PostMapping("/delete")
 	public Object deleteComment(@RequestParam("commentId") Integer commentId){	
      commentService.deleteComment(commentId);
 	return new Result<Object>(EmUserError.SUCCESS,null);
 	}
 	
-	@PostMapping("delete/reply")
+	/**
+	 * 删除回复
+	 * @param replyId
+	 * @return
+	 */
+	@PostMapping("/delete/reply")
 	public Object deleteReply(@RequestParam("replyId") Integer replyId){	
 		replyService.deleteReply(replyId);	
 	return new Result<Object>(EmUserError.SUCCESS,null);

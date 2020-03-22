@@ -62,24 +62,7 @@ public class ArticleServiceTest {
 		
 	}
 	
-	@Test
-	public void testFindAllByType(){
-		
-		Integer type = 2;
-		Integer page = 1;
-		ArticleHeadPageVO articlePageVO = articleService.findAllAricleByType(type, page);
-		articlePageVO.getContent().forEach(System.out::println);
-		
-	}
 	
-	@Test
-	public void testFindAllAricleByUserId(){
-
-		Integer userId = 1;
-		Integer page = 1;
-		ArticleHeadPageVO articlePageVO = articleService.findAllAricleByUserId(userId, page);
-		articlePageVO.getContent().forEach(System.out::println);
-	}
 	
 	//测试通用分页条件查询
 	@Test

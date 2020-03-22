@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +30,7 @@ import top.springdatajpa.zujijpa.Specifications;
 */
 @RestController
 @CrossOrigin(allowCredentials = "true" ,allowedHeaders = "*")
+@RequestMapping("/article")
 public class AticleController extends BaseController{
 
 	@Autowired
@@ -42,7 +44,7 @@ public class AticleController extends BaseController{
 	 * @param page 第几页
 	 * @return
 	 */
-	@GetMapping("/condition/articles")
+	@GetMapping("/condition/select")
 	public Result<ArticleHeadPageVO> findArticlesByCondition(Article article,
 			                 @RequestParam(value = "page",defaultValue="1") Integer page,
 			                 HttpSession session){
@@ -77,7 +79,7 @@ public class AticleController extends BaseController{
 	 * @param session
 	 * @return
 	 */
-	@PostMapping("insert/article")
+	@PostMapping("/insert")
 	public Result<Object> insertArticle(Article article ,HttpSession session){
 		
 
@@ -108,7 +110,7 @@ public class AticleController extends BaseController{
 	 * @param session
 	 * @return
 	 */
-	@PostMapping("update/article")
+	@PostMapping("/update")
 	public Result<Object> updatetArticle(Article article ,HttpSession session){
 		
 		//判断用户是否登录
@@ -145,7 +147,7 @@ public class AticleController extends BaseController{
 	 * @param articleId
 	 * @return
 	 */
-	@GetMapping("article/delail")
+	@GetMapping("/detail")
 	public Object findArticleById(@RequestParam("articleId") Integer articleId){
 		
 		ArticleUserDetail articleUserDetail = articleService.findArticleById(articleId);
@@ -153,5 +155,18 @@ public class AticleController extends BaseController{
 		return new Result<ArticleUserDetail>(EmUserError.SUCCESS,articleUserDetail);
 	}
 	
+	
+	/**
+	 * 文章点赞
+	 * @param articleId
+	 * @return
+	 */
+	@PostMapping("/star")
+	public Object toSatr(@RequestParam("articleId") Integer articleId){
+		
+		 articleService.StarToArticle(articleId);
+		
+		return new Result<ArticleUserDetail>(EmUserError.SUCCESS,null);
+	}
 	
 }

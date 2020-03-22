@@ -5,8 +5,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.persistence.criteria.Path;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,49 +49,25 @@ public class ArticleServiceImpl implements ArticleService{
 	@Value("${pageSize}")
 	private Integer pageSize;
 	
-	
 	@Override
-	public ArticleHeadPageVO findAllAricleByType(Integer type, Integer page) {
-				
-		//构造查询的页，和每页大小
-		Pageable pageable = PageRequest.of(page-1,pageSize);	
-		
-		//构造分页查询的条件
-/*		Specification<ArticleUserDetail> spec = new Specification<ArticleUserDetail>() {
-			@Override
-			public Predicate toPredicate(Root<ArticleUserDetail> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				   Path articleType = root.get("articleType");     
-	               
-	                Predicate predicate = cb.equal(articleType, type);           
-				return predicate;
-			}
-		};*/
-		
-	  //以上代码的简化，使用lambda表达式
-		 Specification<ArticleUserDetail> spec = (root,query,cb) ->{
-				Path<Object> articleType = root.get("articleType");                    
-			    return cb.equal(articleType, type);
-			};
-			
-		
-		//调用ipa的条件分页查询，返回page对象
-		Page<ArticleUserDetail> articleAndUserPage = articleUserDTORepository.findAll(spec, pageable);		
-		//获取page对象里面的list
-		List<ArticleUserDetail> articleAndUserList = articleAndUserPage.getContent();
-		
-		//调用copyListfromArticleUD方法,list保留想要的字段
-		//目标list
-		List<ArticleHeadMsgDTO> articleDtoList = copyListfromArticleUD(articleAndUserList);
-		
-		//包装一层
-		ArticleHeadPageVO articlePageVO = new ArticleHeadPageVO();
-		articlePageVO.setTotalPages(articleAndUserPage.getTotalPages());
-		articlePageVO.setContent(articleDtoList);
-		
-		return articlePageVO;
-		 
+	public ArticleHeadPageVO findAll(Specification<ArticleUserDetail> spec, Integer page) {
+	      
+		 //构造页面条件 ,第几页,每页大小
+		    Pageable pageable = PageRequest.of(page-1,pageSize);	
+	 	
+		   //调用查找方法,返回Page对象
+	 		Page<ArticleUserDetail> articleAndUserPage = articleUserDTORepository.findAll(spec, pageable);
+	 		//获取page对象的list
+	 		List<ArticleUserDetail> articleAndUserList = articleAndUserPage.getContent();
+            //转换为目标list,只保留需要的部分属性
+	        List<ArticleHeadMsgDTO> articleHeadList = copyListfromArticleUD(articleAndUserList);          
+	        //构造返回参数对象
+	        ArticleHeadPageVO ArticlePageVO = new ArticleHeadPageVO();
+	        ArticlePageVO.setContent(articleHeadList);
+	        ArticlePageVO.setTotalPages(articleAndUserPage.getTotalPages());
+	        
+	 		return ArticlePageVO;
 	}
-	
 	
 	/**
 	 * @param List<ArticleUserDetail> 连表查的list(属性太多)
@@ -119,65 +93,7 @@ public class ArticleServiceImpl implements ArticleService{
 	    	 BeanUtils.copyProperties(articleUserDetail.getUserDetail(),articlePageDTO);
 	    	 return articlePageDTO;
 	    };
-	    
-	
-	@Override
-	public ArticleHeadPageVO findAll(Integer page) {
-		
-		Pageable pageable = PageRequest.of(page-1,pageSize);	
-		
-		Page<ArticleUserDetail> articlepage = articleUserDTORepository.findAll(pageable);
-		
-		List<ArticleUserDetail> articleList = articlepage.getContent();
-		List<ArticleHeadMsgDTO> articleDtoList = copyListfromArticleUD(articleList);
-		
-		
-		ArticleHeadPageVO articlePageVO = new ArticleHeadPageVO();
-		articlePageVO.setTotalPages(articlepage.getTotalPages());
-		articlePageVO.setContent(articleDtoList);
-		
-		return articlePageVO;
-	}
-
-
-	@Override
-	public ArticleHeadPageVO findAllAricleByUserId(Integer userId, Integer page) {
-		
-      Pageable pageable = PageRequest.of(page-1,pageSize);	
-
-     Specification<ArticleUserDetail> spec = (root,query,cb) ->{ 
-	    return cb.equal(root.get("userId"), userId);
-	  };
-	
-		Page<ArticleUserDetail> articleAndUserPage = articleUserDTORepository.findAll(spec, pageable);
-		List<ArticleUserDetail> articleAndUserList = articleAndUserPage.getContent();
-
-       List<ArticleHeadMsgDTO> articleHeadList = copyListfromArticleUD(articleAndUserList);
-
-       ArticleHeadPageVO ArticlePageVO = new ArticleHeadPageVO();
-       ArticlePageVO.setContent(articleHeadList);
-       ArticlePageVO.setTotalPages(articleAndUserPage.getTotalPages());
-       
-		return ArticlePageVO;
-	}
-
-
-	@Override
-	public ArticleHeadPageVO findAll(Specification<ArticleUserDetail> spec, Integer page) {
-	      Pageable pageable = PageRequest.of(page-1,pageSize);	
-	 	
-	 		Page<ArticleUserDetail> articleAndUserPage = articleUserDTORepository.findAll(spec, pageable);
-	 		List<ArticleUserDetail> articleAndUserList = articleAndUserPage.getContent();
-
-	        List<ArticleHeadMsgDTO> articleHeadList = copyListfromArticleUD(articleAndUserList);
-
-	        ArticleHeadPageVO ArticlePageVO = new ArticleHeadPageVO();
-	        ArticlePageVO.setContent(articleHeadList);
-	        ArticlePageVO.setTotalPages(articleAndUserPage.getTotalPages());
-	        
-	 		return ArticlePageVO;
-	}
-
+	    	
 
 	@Override
 	public Article inserArticle(Article article) {
@@ -230,6 +146,20 @@ public class ArticleServiceImpl implements ArticleService{
 			throw new UserException(EmUserError.ARTICLE_NOT_EXISI);
 		}					
 		return optional.get();
+	}
+
+	@Override
+	public void StarToArticle(Integer articleId) {		
+		Optional<Article> optional = articleRepository.findById(articleId);
+		if(optional.isPresent()){
+			throw new UserException(EmUserError.ARTICLE_NOT_EXISI);
+		}
+		
+		Article article = optional.get();
+		article.setArticleStar(article.getArticleStar() + 1);
+		
+		articleRepository.save(article);
+		
 	}
 
 }

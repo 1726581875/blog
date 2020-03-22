@@ -29,6 +29,13 @@ public class CategoryController extends BaseController{
 	private CategoryService categoryService;
 	
 	
+	/**
+	 * 按大类型查询分类,如果不传bigType,默认查全部分类
+	 * 如果传0,表示查前端的小分类,1则是后端
+	 * @param bigType
+	 * @return
+	 * @throws Exception
+	 */
 	@GetMapping("/categories")
 	public Result<List<Category>> findAllCategory(@RequestParam(value = "bigType",defaultValue="-1")
 	                                  Integer bigType) throws Exception{

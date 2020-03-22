@@ -108,7 +108,8 @@ public class UserLoginController extends BaseController{
 		//放入session
 		httpServletRequest.getSession().setAttribute("user", userDetail);
          //返回成功
-    	 return new Result<Object>(EmUserError.SUCCESS,null);
+		
+    	 return new Result<Object>(EmUserError.SUCCESS,userDetail.getUserId());
      }
 	
 	
@@ -141,7 +142,7 @@ public class UserLoginController extends BaseController{
 		httpServletRequest.getSession().setAttribute("user", userDetail);
          
          //返回成功
-    	 return new Result<Object>(EmUserError.SUCCESS,null);
+    	 return new Result<Object>(EmUserError.SUCCESS,userDetail.getUserId());
      }
 	
 	
