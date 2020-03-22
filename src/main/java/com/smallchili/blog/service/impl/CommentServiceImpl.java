@@ -15,13 +15,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.smallchili.blog.dataobject.ArticleComment;
-import com.smallchili.blog.dataobject.CommentReply;
 import com.smallchili.blog.dto.CommentAndReplyDTO;
 import com.smallchili.blog.dto.ReplyerDTO;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.repository.CommentRepository;
-import com.smallchili.blog.repository.UserDetailRepository;
 import com.smallchili.blog.service.CommentService;
 import com.smallchili.blog.service.ReplyService;
 import com.smallchili.blog.vo.CommentAndReplyVO;
@@ -37,10 +35,7 @@ import top.springdatajpa.zujijpa.Specifications;
 public class CommentServiceImpl implements CommentService{
 	@Autowired
     private CommentRepository commentRepository;
-	
-    @Autowired
-    private UserDetailRepository userRepository;
-    
+	  
     @Autowired
     private ReplyService replyService;
     

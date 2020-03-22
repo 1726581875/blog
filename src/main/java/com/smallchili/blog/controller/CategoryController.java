@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.smallchili.blog.dataobject.Category;
-import com.smallchili.blog.dto.Result;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.service.CategoryService;
+import com.smallchili.blog.vo.Result;
 
 /**
 * @author xmz

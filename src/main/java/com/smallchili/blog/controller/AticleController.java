@@ -1,7 +1,5 @@
 package com.smallchili.blog.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,21 +7,18 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.smallchili.blog.dataobject.Article;
 import com.smallchili.blog.dataobject.UserDetail;
-import com.smallchili.blog.dataobject.UserLogin;
-import com.smallchili.blog.dto.ArticleHeadMsgDTO;
 import com.smallchili.blog.dto.ArticleUserDetail;
-import com.smallchili.blog.dto.Result;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.service.ArticleService;
 import com.smallchili.blog.vo.ArticleHeadPageVO;
+import com.smallchili.blog.vo.Result;
 
 import top.springdatajpa.zujijpa.Specifications;
 

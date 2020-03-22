@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.smallchili.blog.dto.Result;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
+import com.smallchili.blog.vo.Result;
 
 public class BaseController {
 

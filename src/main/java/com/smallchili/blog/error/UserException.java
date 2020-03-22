@@ -2,6 +2,8 @@ package com.smallchili.blog.error;
 
 public class UserException extends RuntimeException implements CommonError{
 
+	private static final long serialVersionUID = 1L;
+	
 	private CommonError commonError;
 	
 	

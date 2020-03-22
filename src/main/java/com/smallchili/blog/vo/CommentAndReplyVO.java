@@ -2,7 +2,6 @@ package com.smallchili.blog.vo;
 
 import java.util.List;
 
-import com.smallchili.blog.dataobject.Article;
 import com.smallchili.blog.dto.CommentAndReplyDTO;
 
 import lombok.Data;

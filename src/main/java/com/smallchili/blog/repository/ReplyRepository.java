@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.smallchili.blog.dataobject.CommentReply;
-import com.smallchili.blog.dto.ArticleUserDetail;
 
 /**
 * @author xmz

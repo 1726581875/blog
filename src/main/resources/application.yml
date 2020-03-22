@@ -10,7 +10,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/blog?useUnicode=true&characterEncoding=utf8&useSSL=false
     username: root
-    password: wa545464
+    password: root
 #jpa现实语句    
   jpa:
     show-sql: true

@@ -4,15 +4,10 @@ package com.smallchili.blog.controller;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,13 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.smallchili.blog.dataobject.UserDetail;
 import com.smallchili.blog.dataobject.UserLogin;
-import com.smallchili.blog.dto.Result;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.service.UserDetailService;
 import com.smallchili.blog.service.UserLoginService;
 import com.smallchili.blog.utils.CheckUtil;
-import com.smallchili.blog.utils.CookieUtil;
+import com.smallchili.blog.vo.Result;
 
 
 @RestController

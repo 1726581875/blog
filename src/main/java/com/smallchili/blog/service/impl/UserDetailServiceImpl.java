@@ -1,21 +1,15 @@
 package com.smallchili.blog.service.impl;
 
-import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.smallchili.blog.dataobject.UserDetail;
-import com.smallchili.blog.dto.ArticleHeadMsgDTO;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.repository.UserDetailRepository;
-import com.smallchili.blog.service.ArticleService;
 import com.smallchili.blog.service.UserDetailService;
 import com.smallchili.blog.utils.RandomUtil;
 import com.smallchili.blog.vo.OtherUserDetailVO;
@@ -31,8 +25,6 @@ public class UserDetailServiceImpl implements UserDetailService{
 	@Autowired
 	private UserDetailRepository userDetailRepository;
 
-	@Autowired
-	private ArticleService articleService;
 
 	@Override
 	public UserDetail findDetailById(Integer userId) throws UserException{

@@ -1,7 +1,6 @@
 package com.smallchili.blog.dataobject;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

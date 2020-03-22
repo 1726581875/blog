@@ -1,4 +1,4 @@
-package com.smallchili.blog.dto;
+package com.smallchili.blog.vo;
 
 import com.smallchili.blog.error.EmUserError;
 

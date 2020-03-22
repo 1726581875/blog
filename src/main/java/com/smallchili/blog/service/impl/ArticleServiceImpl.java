@@ -5,18 +5,11 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,8 +26,6 @@ import com.smallchili.blog.repository.ArticleRepository;
 import com.smallchili.blog.repository.ArticleUserDTORepository;
 import com.smallchili.blog.repository.UserDetailRepository;
 import com.smallchili.blog.service.ArticleService;
-import com.smallchili.blog.service.CommentService;
-import com.smallchili.blog.vo.CommentAndReplyVO;
 import com.smallchili.blog.vo.ArticleHeadPageVO;
 
 /**
@@ -55,8 +46,6 @@ public class ArticleServiceImpl implements ArticleService{
 	@Autowired
 	private UserDetailRepository userDetailRepository;
 	
-	@Autowired
-	private CommentService commentService;
 	
     //配置页数
 	@Value("${pageSize}")
@@ -82,7 +71,7 @@ public class ArticleServiceImpl implements ArticleService{
 		
 	  //以上代码的简化，使用lambda表达式
 		 Specification<ArticleUserDetail> spec = (root,query,cb) ->{
-				Path articleType = root.get("articleType");                    
+				Path<Object> articleType = root.get("articleType");                    
 			    return cb.equal(articleType, type);
 			};
 			

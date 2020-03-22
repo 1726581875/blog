@@ -8,8 +8,6 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.catalina.servlet4preview.http.HttpServletRequest;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
@@ -21,11 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.smallchili.blog.dataobject.UserDetail;
-import com.smallchili.blog.dataobject.UserLogin;
-import com.smallchili.blog.dto.Result;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.service.UserDetailService;
+import com.smallchili.blog.vo.Result;
 
 /**
 * @author xmz

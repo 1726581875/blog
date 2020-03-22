@@ -3,7 +3,6 @@ package com.smallchili.blog.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import com.smallchili.blog.dataobject.Article;
 import com.smallchili.blog.dto.ArticleUserDetail;
 
 /**

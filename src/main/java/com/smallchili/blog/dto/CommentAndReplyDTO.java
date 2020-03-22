@@ -3,9 +3,6 @@ package com.smallchili.blog.dto;
 import java.util.Date;
 import java.util.List;
 
-import com.smallchili.blog.dataobject.ArticleComment;
-import com.smallchili.blog.dataobject.CommentReply;
-
 import lombok.Data;
 
 /**

@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.smallchili.blog.dataobject.ArticleComment;
 import com.smallchili.blog.dataobject.CommentReply;
-import com.smallchili.blog.dto.Result;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.service.CommentService;
 import com.smallchili.blog.service.ReplyService;
 import com.smallchili.blog.vo.CommentAndReplyVO;
+import com.smallchili.blog.vo.Result;
 
 /**
 * @author xmz
