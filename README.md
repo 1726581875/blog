@@ -1,6 +1,6 @@
 后台技术
 springboot
-spring data jpa
+spring-data-jpa
 mysql
 
 前台:
