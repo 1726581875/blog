@@ -50,8 +50,8 @@ public class UserDetaiServiceTest {
 	@Test
 	public void testFindByName(){
 		String name = "oneGe";
-		UserDetail findByUserName = repository.findByUserName(name);
-		System.out.println(findByUserName);
+		UserDetail findByUserN1ume = repository.findByUserName(name);
+		System.out.println(findByUserN1ume);
 	}
 	
 }
