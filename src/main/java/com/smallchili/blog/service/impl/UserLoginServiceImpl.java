@@ -107,6 +107,12 @@ public class UserLoginServiceImpl implements UserLoginService{
 	   return DigestUtils.md5DigestAsHex(base.getBytes());
    }
 
+@Override
+public UserLogin findByUsername(String username) {
+	
+	return userLoginRepository.findByUsername(username);
+}
+
 
    
 

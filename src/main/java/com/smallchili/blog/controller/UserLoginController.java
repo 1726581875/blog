@@ -44,6 +44,11 @@ public class UserLoginController extends BaseController{
 	@Autowired
 	HttpServletRequest httpServletRequest;
 	
+	/**
+	 * 获取手机验证码的接口
+	 * @param userPhone
+	 * @return
+	 */
 	@PostMapping("/phone/getotp")
 	public Result<Map<String,String>> getOtp(@RequestParam("userPhone") String userPhone){
 		
@@ -195,6 +200,11 @@ public class UserLoginController extends BaseController{
 		return new Result<UserDetail>(EmUserError.SUCCESS,userDetail);
 	}
 	
+	
+	/**
+	 * 登出功能
+	 * @return
+	 */
 	@GetMapping("/loginout")
 	public Result<Object> loginOut(){
 		
@@ -213,6 +223,26 @@ public class UserLoginController extends BaseController{
 		throw new UserException(EmUserError.USER_NOT_LOGIN);
 		
 	 }
+	
+	
+	/**
+	 * 判断用户名是否存在
+	 * @param username
+	 * @return
+	 */
+	@GetMapping("user/username")
+	public Result<Object> findByUsername(@RequestParam("username") String username){
+		
+		UserLogin userLogin = userLoginService.findByUsername(username);
+		
+		if(userLogin != null){
+			return new Result<Object>(EmUserError.SUCCESS,null);
+		}
+		
+		throw new UserException(EmUserError.USER_NOT_EXIST);
+		
+	 }
+	
 	
 	
 }
