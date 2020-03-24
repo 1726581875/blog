@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.smallchili.blog.dataobject.UserDetail;
+import com.smallchili.blog.dataobject.UserLogin;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.service.UserDetailService;
+import com.smallchili.blog.service.UserLoginService;
+import com.smallchili.blog.utils.CheckUtil;
 import com.smallchili.blog.vo.Result;
 
 /**
@@ -35,6 +39,13 @@ public class UserDetailController extends BaseController {
 	@Autowired
 	private UserDetailService userDetailService;
 
+
+	@Autowired
+	UserLoginService userLoginService;
+	
+	@Autowired
+	HttpServletRequest httpServletRequest;
+	
 	@Value("${imagePath}")
 	private String IMAGE_PATH;
 
@@ -46,7 +57,7 @@ public class UserDetailController extends BaseController {
 	public Result<UserDetail> findMyDetail(@RequestParam("userId") Integer userId, HttpSession session) {
 
 		// 入参校验
-		if (userId == 0) {
+		if (userId == 0 || StringUtils.isEmpty(userId)) {
 			throw new UserException(EmUserError.PARAMETER_ERROR);
 		}
 
@@ -67,27 +78,6 @@ public class UserDetailController extends BaseController {
 		return new Result<UserDetail>(EmUserError.SUCCESS, userDetail);
 	}
 
-	/**
-	 * @param userId
-	 * @return 获取其他用户的信息
-	 */
-	@GetMapping("/otheruser/detail")
-	public Result<UserDetail> findOtherUserDetail(@RequestParam("userId") Integer userId, HttpSession session) {
-
-		// 入参校验
-		if (userId == 0) {
-			throw new UserException(EmUserError.PARAMETER_ERROR);
-		}
-
-		// 调用查找方法
-		UserDetail userDetail = userDetailService.findDetailById(userId);
-		// 若不存在
-		if (userDetail == null) {
-			throw new UserException(EmUserError.USER_NOT_EXIST);
-		}
-		// 返回
-		return new Result<UserDetail>(EmUserError.SUCCESS, userDetail);
-	}
 
 	/**
 	 * 
@@ -108,10 +98,13 @@ public class UserDetailController extends BaseController {
 
 		}
 
+		//判断是否是登录或者是否是本用户
+		
 		UserDetail user = (UserDetail) session.getAttribute("user");
 		if (user == null || user.getUserId() != userDetail.getUserId()) {
 			throw new UserException(EmUserError.USER_NOT_LOGIN);
 		}
+		
 
 		// 如果没有文件(没有修改头像)
 		if (file == null) {
@@ -185,5 +178,54 @@ public class UserDetailController extends BaseController {
 		}
 
 	}
+	
+	
+	/**
+	 * 更改密码
+	 * @param userPhone 手机号
+	 * @param otp 验证码
+	 * @param password 新密码
+	 * @return 
+	 */
+	@PostMapping(value = "/update/password",produces = {"application/json;charset=UTF-8"})
+    public Result<Object> updatePasswordByPhone(@RequestParam("userPhone") String userPhone,
+    		                     @RequestParam("otp") String otp,
+    		                     @RequestParam("password") String password){
+		
+		//入参格式校验
+		if(StringUtils.isEmpty(userPhone) 
+				|| !CheckUtil.checkPhone(userPhone)
+				|| StringUtils.isEmpty(otp)
+				||  StringUtils.isEmpty(password)){
+			throw new UserException(EmUserError.PARAMETER_ERROR);
+		}
+		
+		//查询用户是否存在
+	    UserLogin userLogin = userLoginService.loginByPhone(userPhone);      
+	       if(userLogin == null){
+	    	   throw new UserException(EmUserError.USER_PHONE_REEOR,null);
+	         }
+		
+		//判断otp是否有效
+		String userOtp = (String)httpServletRequest.getSession().getAttribute(userPhone);
+		if(StringUtils.isEmpty(userOtp)){
+			throw new UserException(EmUserError.PHONE_OTP_ERROR.setErrMsg("验证码不存在,或者已过期,请重新发送验证码"));
+		}
+		//判断otp是否正确
+		if(!userOtp.equals(otp)){
+			throw new UserException(EmUserError.PHONE_OTP_ERROR);
+		}	
+		
+		//查出userDetail
+		 UserLogin user = userLoginService.updatePasswordByPhone(userPhone, password);
+		 if(user == null){
+			 throw new UserException(EmUserError.UNKONW_ERROR);
+		 }
+         //返回成功
+		
+    	 return new Result<Object>(EmUserError.SUCCESS,null);
+     }
+	
+	
 
 }

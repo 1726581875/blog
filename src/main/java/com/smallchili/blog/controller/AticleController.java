@@ -112,21 +112,14 @@ public class AticleController extends BaseController{
 	 */
 	@PostMapping("/update")
 	public Result<Object> updatetArticle(Article article ,HttpSession session){
-		
-		//判断用户是否登录
-		UserDetail user = (UserDetail) session.getAttribute("user");
-		if(user == null){
-			throw new UserException(EmUserError.USER_NOT_LOGIN);
-		}
-		//把session里的userId设置进去
-		article.setUserId(user.getUserId());
-		
+				
 		//简单校验参数
 		if(StringUtils.isEmpty(article.getArticleId())
 				||StringUtils.isEmpty(article.getArticleTitle())
 				|| StringUtils.isEmpty(article.getArticleContent())
 				|| StringUtils.isEmpty(article.getBigType())
-			    || StringUtils.isEmpty(article.getArticleType())){
+			    || StringUtils.isEmpty(article.getArticleType())
+			    || StringUtils.isEmpty(article.getUserId())){
 						
 			throw new UserException(EmUserError.PARAMETER_ERROR);
 		}

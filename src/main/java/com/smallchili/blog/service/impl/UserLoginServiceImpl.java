@@ -77,11 +77,11 @@ public class UserLoginServiceImpl implements UserLoginService{
 	}
 
 	@Override
-	public UserLogin updatePasswordByPhone(String userPhone , String username,String password)throws UserException {
+	public UserLogin updatePasswordByPhone(String userPhone,String password)throws UserException {
 		
 		//先查出用户
 		UserLogin userLogin = 
-				userLoginRepository.findByUserPhoneAndUsername(userPhone, username);
+				userLoginRepository.findByUserPhone(userPhone);
 		if(userLogin == null){
 			throw new UserException(EmUserError.USER_PHONE_REEOR);
 		}
@@ -101,8 +101,12 @@ public class UserLoginServiceImpl implements UserLoginService{
 	}
 
 	
-   public String getMD5(String str){
-	   
+ /**
+  * 获取对应的md5密文
+ * @param str
+ * @return md5密文
+ */
+public String getMD5(String str){	   
 	   String base = slat + str;
 	   return DigestUtils.md5DigestAsHex(base.getBytes());
    }

@@ -38,9 +38,8 @@ public class UserLoginServiceTest {
 	public void testUpdate(){
 		
 		String userPhone = "13922077569";
-		String username = "111";
 		String password = "123";
-		UserLogin result = userService.updatePasswordByPhone(userPhone, username, password);
+		UserLogin result = userService.updatePasswordByPhone(userPhone, password);
 		System.out.println(result);
 	}
 	

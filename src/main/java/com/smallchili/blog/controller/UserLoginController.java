@@ -88,7 +88,7 @@ public class UserLoginController extends BaseController{
 		}
 		
 		//查询用户是否存在
-	    UserLogin userLogin = userLoginService.loginByPhone(userPhone);      
+	    UserLogin userLogin = userLoginService.loginByPhone(userPhone) ;   
 	       if(userLogin == null){
 	    	   throw new UserException(EmUserError.USER_PHONE_REEOR,null);
 	         }

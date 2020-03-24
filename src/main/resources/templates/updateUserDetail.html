@@ -68,7 +68,8 @@ function getQueryVariable(variable)
 		   });
 	   /* *******************************************************
 	 	         3.修改头像	                    
-	 	         ajax      
+	 	         ajax   
+	 	              解决  文件上传本地显示预览
 	 	   **********************************************************
 	  */
 	    function showImg(obj) {
@@ -88,15 +89,24 @@ function getQueryVariable(variable)
       };
  
       
-	   //登录按钮绑定click事件   
-	   
+	   //钮绑定click事件   
+	   /* *******************************************************
+	 	        提交所有数据到后台	                    
+                     更新操作
+	 	   **********************************************************
+	  */
 	  $("#updateImage").on("click",function(){
 		   
+		     //获取文件选择的内容
 		      var fileObj = $('#fileName').get(0).files[0];
+		      
+		      //构建一个formdata对象
 		       var formdata=new FormData();
+		      //如果有选择文件(图片),表示要更新头像,添加到表单
 		       if(typeof(fileObj)!="undefined"){
 		        formdata.append('fileName',fileObj);
 		       }
+		      //添加其他数据到表单
 		        formdata.append('userId',$('#userId').val());
 		        formdata.append('userName',$('#userName').val());
 		        formdata.append('userSex',$('#userSex').val());

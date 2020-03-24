@@ -13,7 +13,7 @@ public interface UserLoginService {
 	
 	UserLogin register(UserLogin userLogin);
 	
-	UserLogin updatePasswordByPhone(String userPhone,String username,String password);
+	UserLogin updatePasswordByPhone(String userPhone,String password);
 	
 	public void delete(Integer userId);
 	
