@@ -3,21 +3,29 @@
 <head>
   <meta charset="UTF-8"/>
   <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="./js/address.js"></script>
 </head>
 <body>
-<h3>其他用户详情页</h3>
+<h3>用户详情页</h3>
     头像  :<img id = "userImage" alt="" src="" width="100px" height="100px"><br>
+     <form id="itemForm" enctype="multipart/form-data">
+        <input id="imgFile" type="file" name="fileName" onchange="showImg(this)"/>
+        <input id="updateImage" type="button" value="修改"/>
+        <script src="./js/address.js"></script>
+     </form>
+    
     用户名:<span id="userName"></span><br/>
     性别:<span id="sex"></span><br/>
     年龄:<span id="age"></span><br/>
     格言:<span id="motto"></span><br/>
-   <div>---------发表的文章---------</div>
+ <div id="toupdate"></div>
+   <div>---------我发表的文章---------</div>
    <span id="result"></span>
 </body>
 <script type="text/javascript">
 
 /* #####################################################
-             其他用户详情页结构
+             用户详情页结构
              发送ajax 加载用户信息{
       success : {
 	        1.渲染用户信息
@@ -55,19 +63,19 @@ function getQueryVariable(variable)
 		   $.ajax({
 			   type : "GET",
 			   contentType : "application/x-www-form-urlencoded",
-			   url : "http://localhost:8080/blog/otheruser/detail",
+			   url : getAddress()+"/user/detail",
 			   data:{
 				   "userId" : getQueryVariable("userId")			 
 			   },
 			   xhrFields : {withCredentials : true},
 		       success : function(result){
 		    	  if(result.success){		 
-		    		  $("#userImage").attr("src",result.data.userImage);
+		    		  $("#userImage").attr("src",getAddress()+result.data.userImage);
 		    		  $("#userName").html(result.data.userName);
 		    		  $("#sex").html(result.data.userSex);
 		    		  $("#age").html(result.data.userAge);
 		    		  $("#motto").html(result.data.userMotto);
-		    		
+		    		  $("#toupdate").html("<a href='updateUserDetail.html?userId="+result.data.userId+"'>修改信息</a>")
 		    		  
 		        /* *******************************************************
 		 	         2.加载用户的博客文章信息	                    
@@ -78,7 +86,7 @@ function getQueryVariable(variable)
 		 		   $.ajax({
 		 			   type : "GET",  
 		 			   contentType : "application/x-www-form-urlencoded",
-		 			   url : "http://localhost:8080/blog/condition/articles",
+		 			   url : getAddress()+"/article/condition/select",
 		 			   data:{
 		 				   "userId": getQueryVariable("userId"),
 		 				   "page" : 1			  
@@ -90,7 +98,7 @@ function getQueryVariable(variable)
 		 			   	     var articleList = result.data.content;
 		 		    	     //for循环拼接article
 		 			    	  for(var i = 0;i<articleList.length;i++){
-		 			    	   $("#result").append(" <a href='otherUserDetail.html?userId="+articleList[i].userId+"'><img src='http://localhost:8080/blog"+articleList[i].userImage+"' width='80px' height='80px'/> \
+		 			    	   $("#result").append(" <a href='otherUserDetail.html?userId="+articleList[i].userId+"'><img src='"+getAddress()+articleList[i].userImage+"' width='80px' height='80px'/> \
 		 				       <span>"+articleList[i].userName+"</span></a> \
 		 			    	   <a href='#'>"+articleList[i].articleTitle+"</a> \
 		 			    	   <a href='#'>点赞数:"+articleList[i].articleStar+"</a> \
@@ -108,7 +116,7 @@ function getQueryVariable(variable)
 		    		  
 		    	  }else{
 		    		  alert(result.msg);
-		    		  window.location.href="login.html";
+		    		//  window.location.href="login.html";
 		    	  }
 		    	 
 		       },
@@ -117,7 +125,61 @@ function getQueryVariable(variable)
 		       }
 		   });
 
+ 		  
+	   /* *******************************************************
+	 	         3.修改头像	                    
+	 	         ajax      
+	 	   **********************************************************
+	  */
+	    function showImg(obj) {
+          var file=$(obj)[0].files[0];    //获取文件信息
+          var imgdata='';
+          if(file)
+          {
+              var reader=new FileReader();  //调用FileReader
+              reader.readAsDataURL(file); //将文件读取为 DataURL(base64)
+              reader.onload=function(evt){   //读取操作完成时触发。
+                  $("#userImage").attr('src',evt.target.result)  //将img标签的src绑定为DataURL
+              };
+          }
+          else{
+              alert("上传失败");
+          }
+      };
+ 
+      
+	   //登录按钮绑定click事件   
+	   
+	  $("#updateImage").on("click",function(){
+		   
+		     var formdata=new FormData();
+		        formdata.append('fileName',$('#imgFile').get(0).files[0]);
+		     $.ajax({
+		            async: false,
+		            type: 'POST',
+		            url: getAddress()+"/user/update/image",
+		            dataType: 'json',
+		            data: formdata,
+		            contentType:false,//ajax上传图片需要添加
+		            processData:false,//ajax上传图片需要添加
+		            xhrFields : {withCredentials : true},
+			   //ajax发送成功
+		       success : function(result){
+		    	   if(result.success){		  
+		    	 $("#userImage").attr('src', getAddress() + result.data.pic);
+		    	  }else{
+		    		alert(result.msg); 
+		    	  }
+		      },
+		       //ajax发送失败
+		       error : function(result){
+		    	    alert("登录ajax发送失败:"+result.responseText);
+		       }
+		   });
+	   });
 
+    
+    
 	     
 </script>
 

@@ -2,6 +2,7 @@
 <head>
   <meta charset="UTF-8"/>
   <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+   <script src="./js/address.js"></script>
 </head>
 <body>
     <h3>首页</h3>
@@ -18,6 +19,7 @@
 
 </body>
 <script type="text/javascript">
+   
    jQuery(document).ready(function(){
 	/* ***********************************************************
 	      1.检查是否登录
@@ -27,7 +29,7 @@
 	 */  
 	   $.ajax({
 		    type : "GET",  
-		    url : "http://localhost:8080/blog/islogin",
+		    url : getAddress()+"/islogin",
             xhrFields : {withCredentials : true},
 	       success : function(result){//成功返回数据
 	       // 如果已登录	    	   	   
@@ -38,7 +40,7 @@
 	    		$("#login_Or_out").html("<a id='tologinOut' href='#'>登出</a>");
 	    	   
 	    	    //2.可以查看详情
-	    	    $("#login_Or_out").append("<a id='toUserdetail' href='#'><img src='http://localhost:8080/blog"+result.data.userImage+"' width='80px' height='80px'/><span>查看详情</span></a>");
+	    	    $("#login_Or_out").append("<a id='toUserdetail' href='#'><img src='"+getAddress()+result.data.userImage+"' width='80px' height='80px'/><span>查看详情</span></a>");
 	    		$("#toUserdetail").on("click",function(){
 	    		    window.location.href="userDetail.html?userId="+result.data.userId;
 	    		 });
@@ -47,7 +49,7 @@
 	    	  $("#tologinOut").on("click",function(){
 	    			$.ajax({	    				 		
 		    			   type : "GET",  
-		    			   url : "http://localhost:8080/blog/loginout",
+		    			   url : getAddress()+"/loginout",
 		    			   xhrFields : {withCredentials : true},
 		    		       success : function(result){	
 		    		    	   if(result.success){
@@ -85,7 +87,7 @@
 	   //发送ajax请求获取所有分类信息
 	   $.ajax({
 		   type : "GET",  
-		   url : "http://localhost:8080/blog/categories",		  
+		   url : getAddress()+"/categories",		  
 	       success : function(result){//成功返回数据	    	   
 	    	   if(result.success){//后台返回成功
 	    		 //获取数据  
@@ -100,7 +102,7 @@
 		    		   $.ajax({
 		    			   type : "GET",  
 		    			   contentType : "application/x-www-form-urlencoded",
-		    			   url : "http://localhost:8080/blog/condition/articles",
+		    			   url : getAddress()+"/article/condition/select",
 		    			   data:{
 		    				   "articleType" : $(this).data("id") ,
 		    				   "page" : 1		  
@@ -113,7 +115,7 @@
 		    		    	      $("#result").html("");
 		    		       //for循环拼接article
 		    			  for(var i = 0;i<articleList.length;i++){
-		    		     $("#result").append(" <a href='otherUserDetail.html?userId="+articleList[i].userId+"'><img src='http://localhost:8080/blog"+articleList[i].userImage+"' width='80px' height='80px'/> \
+		    		     $("#result").append(" <a href='otherUserDetail.html?userId="+articleList[i].userId+"'><img src='"+getAddress()+articleList[i].userImage+"' width='80px' height='80px'/> \
 		    	       <span>"+articleList[i].userName+"</span></a> \
 		    	       <a href='#'>"+articleList[i].articleTitle+"</a> \
 		    	       <a href='#'>点赞数:"+articleList[i].articleStar+"</a> \
@@ -153,7 +155,7 @@
 	   $.ajax({
 		   type : "GET",  
 		   contentType : "application/x-www-form-urlencoded",
-		   url : "http://localhost:8080/blog/condition/articles",
+		   url : getAddress()+"/article/condition/select",
 		   data:{
 			   "page" : 1			  
 		   },
@@ -163,7 +165,7 @@
 		   	     var articleList = result.data.content;
 	    	     //for循环拼接article
 		    	  for(var i = 0;i<articleList.length;i++){
-		    	   $("#result").append("  <a href='otherUserDetail.html?userId="+articleList[i].userId+"'><img src='http://localhost:8080/blog"+articleList[i].userImage+"' width='80px' height='80px'/> \
+		    	   $("#result").append("  <a href='otherUserDetail.html?userId="+articleList[i].userId+"'><img src='"+getAddress()+articleList[i].userImage+"' width='80px' height='80px'/> \
 		    	   <span>"+articleList[i].userName+"</span> </a> \
 		    	   <a href='#'>"+articleList[i].articleTitle+"</a> \
 		    	   <a href='#'>点赞数:"+articleList[i].articleStar+"</a> \

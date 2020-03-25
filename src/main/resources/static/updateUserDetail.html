@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="./js/address.js"></script>
 </head>
 <body>
 <h3>用户详情页</h3>
@@ -49,14 +50,14 @@ function getQueryVariable(variable)
 		   $.ajax({
 			   type : "GET",
 			   contentType : "application/x-www-form-urlencoded",
-			   url : "http://localhost:8080/blog/user/detail",
+			   url : getAddress()+"/user/detail",
 			   data:{
 				   "userId" : getQueryVariable("userId")			 
 			   },
 			   xhrFields : {withCredentials : true},
 		       success : function(result){
 		    	  if(result.success){		 
-		    		  $("#userImage").attr("src",result.data.userImage);
+		    		  $("#userImage").attr("src",getAddress()+result.data.userImage);
 		    		  $("#userId").attr("value",result.data.userId);
 		    		  $("#userName").attr("value",result.data.userName);
 		    		  $("#userSex").attr("value",result.data.userSex);
@@ -115,7 +116,7 @@ function getQueryVariable(variable)
 		     $.ajax({
 		            async: false,
 		            type: 'POST',
-		            url: "http://localhost:8080/blog/user/update/detail",
+		            url: getAddress()+"/user/update/detail",
 		            dataType: 'json',
 		            data: formdata,
 		            contentType:false,//ajax上传图片需要添加
@@ -125,7 +126,7 @@ function getQueryVariable(variable)
 		       success : function(result){
 		    	   if(result.success){
 		    	 alert("修改成功");
-		    	 $("#userImage").attr('src', 'http://localhost:8080/blog' + result.data.userImage);
+		    	 $("#userImage").attr('src', getAddress() + result.data.userImage);
 		    	  }else{
 		    		alert(result.msg); 
 		    	  }

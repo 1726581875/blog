@@ -65,6 +65,7 @@ public class ArticleServiceImpl implements ArticleService{
 	        ArticleHeadPageVO ArticlePageVO = new ArticleHeadPageVO();
 	        ArticlePageVO.setContent(articleHeadList);
 	        ArticlePageVO.setTotalPages(articleAndUserPage.getTotalPages());
+	        ArticlePageVO.setNowPage(page);
 	        
 	 		return ArticlePageVO;
 	}

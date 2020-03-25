@@ -16,6 +16,8 @@ public class ArticleHeadPageVO {
 
 	private Integer totalPages;
 	
+	private Integer nowPage;
+	
 	private List<ArticleHeadMsgDTO> content;
 
 	
