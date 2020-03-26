@@ -42,8 +42,6 @@ public interface ArticleService {
 	 */
 	public Article updateArticle(Article article);
 	
-	
-	
 	/**
 	 * 查找文章详情
 	 * @param articleId
@@ -57,5 +55,7 @@ public interface ArticleService {
 	 * @param articleId
 	 */
 	public void StarToArticle(Integer articleId);
+	
+	public void deleteArticle(Integer articleId);
 	
 }

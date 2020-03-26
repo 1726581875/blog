@@ -82,6 +82,15 @@ CREATE TABLE `comment_reply`(
 PRIMARY KEY(`reply_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='评论回复表';
 
+CREATE TABLE `user_star`(
+`star_id` bigint NOT NULL AUTO_INCREMENT COMMENT '用户点赞表主键',
+`user_id` int NOT NULL COMMENT '点赞的用户Id',
+`obj_id` int DEFAULT 0 COMMENT '点赞的对象Id',
+`star_type` int DEFAULT 0 COMMENT '点赞类型,1.文章,2.文章评论,3是回复',
+`create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+PRIMARY KEY(`star_id`)  
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户点赞表';
+
 
 -- 插入user_login数据 密码是123
 insert into user_login(username,password,user_phone)
@@ -139,3 +148,13 @@ values
 (1,1,3,"你才是傻子"),
 (1,3,1,"牛逼，咋不上天"),
 (1,3,1,"哈哈");
+
+-- user_star表插入数据
+insert into user_star(user_id,obj_id,star_type)
+values
+(1,1,1),
+(1,1,3),
+(1,3,1),
+(1,1,3),
+(1,3,1),
+(1,3,1);

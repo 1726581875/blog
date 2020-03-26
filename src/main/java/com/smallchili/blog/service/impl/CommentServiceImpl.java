@@ -13,13 +13,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.smallchili.blog.dataobject.ArticleComment;
+import com.smallchili.blog.dataobject.CommentReply;
 import com.smallchili.blog.dto.CommentAndReplyDTO;
 import com.smallchili.blog.dto.ReplyerDTO;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.repository.CommentRepository;
+import com.smallchili.blog.repository.ReplyRepository;
 import com.smallchili.blog.service.CommentService;
 import com.smallchili.blog.service.ReplyService;
 import com.smallchili.blog.vo.CommentAndReplyVO;
@@ -36,6 +39,9 @@ public class CommentServiceImpl implements CommentService{
 	@Autowired
     private CommentRepository commentRepository;
 	  
+	@Autowired
+    private ReplyRepository replyRepository;
+	
     @Autowired
     private ReplyService replyService;
     
@@ -51,17 +57,6 @@ public class CommentServiceImpl implements CommentService{
 		return commentRepository.save(comment);
 	}
 
-	@Override
-	public void deleteComment(Integer commentId) {
-		
-		Optional<ArticleComment> optional = commentRepository.findById(commentId);
-		if(!optional.isPresent()){
-			throw new UserException(EmUserError.COMMENT_NOT_EXIST);
-		}
-		
-		commentRepository.deleteById(commentId);
-		
-	}
 
 	@Override
 	public CommentAndReplyVO findAllCommentByArticleId(Integer articleId, Integer page) {
@@ -84,7 +79,7 @@ public class CommentServiceImpl implements CommentService{
 		CommentAndReplyVO commentAndReplyVO = new CommentAndReplyVO();
 		commentAndReplyVO.setCommentList(commentAndReplyDTOList);
 		commentAndReplyVO.setTotalPages(commentPage.getTotalPages());
-		
+		commentAndReplyVO.setNowPage(page);
 		return commentAndReplyVO;
 	}
 
@@ -97,6 +92,34 @@ public class CommentServiceImpl implements CommentService{
 		commentAndReply.setUserImage(e.getReplyer().getUserImage());
 		return commentAndReply;
 	};
+
+	
+	@Override
+	@Transactional
+	public void deleteComment(Integer commentId) {
+		
+		Optional<ArticleComment> optional = commentRepository.findById(commentId);
+		if(!optional.isPresent()){
+			throw new UserException(EmUserError.COMMENT_NOT_EXIST);
+		}
+		//删除该条评论
+		commentRepository.deleteById(commentId);		
+		//删除该评论的回复
+		replyService.deleteReplyByCommentId(commentId);
+	}
+	
+	
+	@Override
+	@Transactional
+	public void deleteComment(List<Integer> commentIds) {
+
+		Specification<CommentReply> spec = Specifications.where(e->{
+					e.eq("commentIds",commentIds); 
+			 });
+		
+		replyRepository.findAll(spec).forEach(System.out::println);
+		
+	}
 	
 	
 }

@@ -150,16 +150,18 @@ public class AticleController extends BaseController{
 	
 	
 	/**
-	 * 文章点赞
+	 * 删除文章
 	 * @param articleId
 	 * @return
 	 */
-	@PostMapping("/star")
-	public Object toSatr(@RequestParam("articleId") Integer articleId){
+	@PostMapping("/delete")
+	public Object deleteAreticle(@RequestParam("articleId") Integer articleId,
+			                     @RequestParam("userId") Integer userId){
 		
 		 articleService.StarToArticle(articleId);
 		
 		return new Result<ArticleUserDetail>(EmUserError.SUCCESS,null);
 	}
+	
 	
 }

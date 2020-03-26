@@ -44,4 +44,10 @@ public class ReplyServiceTest {
 		replyService.findAllReplyByComnentId(commentId).forEach(System.out::println);
 	}
 	
+	
+	@Test
+	public void deleteReplyByCommentId(){
+		replyService.deleteReplyByCommentId(1);
+	}
+	
 }

@@ -19,4 +19,8 @@ public interface ReplyService {
 	public CommentReply inserCommentReply(CommentReply reply);
 	
 	public void deleteReply(Integer replyId);
+	
+	public void deleteReply(List<Integer> replyIds);
+	
+	public void deleteReplyByCommentId(Integer commontId);
 }

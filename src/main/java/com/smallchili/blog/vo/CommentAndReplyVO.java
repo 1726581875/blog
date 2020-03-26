@@ -17,6 +17,8 @@ public class CommentAndReplyVO {
 	
 	private Integer totalPages;
 	
+	private Integer nowPage;
+	
 	private List<CommentAndReplyDTO> commentList;
 	
 	

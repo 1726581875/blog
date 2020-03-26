@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import com.smallchili.blog.dataobject.CommentReply;
 import com.smallchili.blog.dto.ReplyerDTO;
+import com.smallchili.blog.error.EmUserError;
+import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.repository.ReplyRepository;
 import com.smallchili.blog.service.ReplyService;
 
@@ -78,6 +80,25 @@ Function<CommentReply, ReplyerDTO> funtion = e -> {
 	public void deleteReply(Integer replyId) {
 		
 		replyRepository.deleteById(replyId);
+	}
+
+	@Override
+	public void deleteReplyByCommentId(Integer commentId) {
+		
+		replyRepository.deleteByCommentId(commentId);
+		
+	}
+
+	@Override
+	public void deleteReply(List<Integer> replyIds) {
+		
+	 List<CommentReply> replyList = replyRepository.findAllById(replyIds);
+	 if(replyList.isEmpty()){
+		 throw new UserException(EmUserError.COMMENT_NOT_EXIST);
+	 }
+	 
+	 replyRepository.deleteInBatch(replyList);
+	 
 	}
 
 	

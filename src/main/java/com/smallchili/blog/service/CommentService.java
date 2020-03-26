@@ -1,5 +1,7 @@
 package com.smallchili.blog.service;
 
+import java.util.List;
+
 import com.smallchili.blog.dataobject.ArticleComment;
 import com.smallchili.blog.vo.CommentAndReplyVO;
 
@@ -15,5 +17,7 @@ public interface CommentService {
 	public ArticleComment insertComment(ArticleComment comment);
 	
 	public void deleteComment(Integer commentId);
+	
+	public void deleteComment(List<Integer> commentIds);
 	
 }
