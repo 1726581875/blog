@@ -20,4 +20,6 @@ public interface CommentService {
 	
 	public void deleteComment(List<Integer> commentIds);
 	
+	public void commentStar(Integer commentId,Integer star);
+	
 }

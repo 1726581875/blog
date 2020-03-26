@@ -44,6 +44,7 @@ public class UserStarController {
 		}
 		if(articleId != 0){
 			starService.toStar(userId, articleId, 1);
+			
 		}
 		if(commentId != 0){
 			starService.toStar(userId, commentId, 2);

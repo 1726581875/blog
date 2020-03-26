@@ -23,4 +23,6 @@ public interface ReplyService {
 	public void deleteReply(List<Integer> replyIds);
 	
 	public void deleteReplyByCommentId(Integer commontId);
+	
+	public void replyStar(Integer replyId,Integer star);
 }

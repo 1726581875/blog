@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.smallchili.blog.dataobject.Article;
-import com.smallchili.blog.dataobject.UserDetail;
 import com.smallchili.blog.dto.ArticleUserDetail;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
@@ -158,7 +157,7 @@ public class AticleController extends BaseController{
 	public Object deleteAreticle(@RequestParam("articleId") Integer articleId,
 			                     @RequestParam("userId") Integer userId){
 		
-		 articleService.StarToArticle(articleId);
+		 articleService.deleteArticle(articleId);
 		
 		return new Result<ArticleUserDetail>(EmUserError.SUCCESS,null);
 	}

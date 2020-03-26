@@ -1,6 +1,7 @@
 package com.smallchili.blog.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -99,6 +100,17 @@ Function<CommentReply, ReplyerDTO> funtion = e -> {
 	 
 	 replyRepository.deleteInBatch(replyList);
 	 
+	}
+
+	@Override
+	public void replyStar(Integer replyId, Integer star) {
+		Optional<CommentReply> optional = replyRepository.findById(replyId);
+		if(!optional.isPresent()){
+		throw new UserException(EmUserError.COMMENT_NOT_EXIST);
+		}
+		CommentReply reply = optional.get();
+		reply.setReplyStar(reply.getReplyStar() + star);
+		replyRepository.save(reply);
 	}
 
 	

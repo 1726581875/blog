@@ -120,6 +120,19 @@ public class CommentServiceImpl implements CommentService{
 		replyRepository.findAll(spec).forEach(System.out::println);
 		
 	}
+
+
+	@Override
+	public void commentStar(Integer commentId, Integer star) {
+		Optional<ArticleComment> optional = commentRepository.findById(commentId);
+		if(!optional.isPresent()){
+			throw new UserException(EmUserError.COMMENT_NOT_EXIST);
+		}
+		ArticleComment comment = optional.get();
+		comment.setCommentStar(comment.getCommentStar() + star);
+		commentRepository.save(comment);
+		
+	}
 	
 	
 }

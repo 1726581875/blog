@@ -14,6 +14,8 @@ import lombok.Data;
 @Data
 public class CommentAndReplyDTO {
 
+	private Integer commentId;
+	
 	private Integer userId;
 	
 	private String userName;

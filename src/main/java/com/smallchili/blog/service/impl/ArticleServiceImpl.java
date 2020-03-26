@@ -153,18 +153,16 @@ public class ArticleServiceImpl implements ArticleService{
 		return optional.get();
 	}
 
+	
 	@Override
-	public void StarToArticle(Integer articleId) {		
+	public void articleStar(Integer articleId ,Integer star) {		
 		Optional<Article> optional = articleRepository.findById(articleId);
-		if(optional.isPresent()){
+		if(!optional.isPresent()){
 			throw new UserException(EmUserError.ARTICLE_NOT_EXISI);
-		}
-		
+		}		
 		Article article = optional.get();
-		article.setArticleStar(article.getArticleStar() + 1);
-		
-		articleRepository.save(article);
-		
+		article.setArticleStar(article.getArticleStar() + star);	
+		articleRepository.save(article);		
 	}
 
 	@Override

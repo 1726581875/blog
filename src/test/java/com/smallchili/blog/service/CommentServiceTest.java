@@ -52,20 +52,6 @@ public class CommentServiceTest {
 		commentService.deleteComment(commentIds);
 	}
 	
-	@Test
-	public void deleteCommentByArticleId(){
-        List<Integer> list =  new ArrayList<Integer>();
-        list.add(4);
-        list.add(5);      
-		//List<ArticleComment> commentList = commmentRepository.findAllById(list);
-		
-		Specification<CommentReply> spec = Specifications.where(e->{
-			e.eq("commentId",list); 
-	      });
 
-        replyRepository.findAll(spec).forEach(System.out::println);
-		
-		//commmentRepository.deleteInBatch(commentList);
-	}
 	
 }

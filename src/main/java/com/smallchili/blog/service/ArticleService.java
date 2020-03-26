@@ -51,10 +51,11 @@ public interface ArticleService {
 	
 	
 	/**
-	 * 文章点赞
+	 * 文章点赞或取消
 	 * @param articleId
+	 * @param star -1 或 1
 	 */
-	public void StarToArticle(Integer articleId);
+	public void articleStar(Integer articleId , Integer star);
 	
 	public void deleteArticle(Integer articleId);
 	
