@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.smallchili.blog.dataobject.CommentReply;
 import com.smallchili.blog.repository.CommentRepository;
 import com.smallchili.blog.repository.ReplyRepository;
+import com.smallchili.blog.utils.CommonCode;
 
 import top.springdatajpa.zujijpa.Specifications;
 
@@ -72,5 +73,14 @@ public class ReplyServiceTest {
 		//commmentRepository.deleteInBatch(commentList);
 	}
 	
+	@Test
+	public void deleteReplyIdList(){
+        List<Integer> list =  new ArrayList<Integer>();
+        list.add(1);
+        list.add(3);
+        list.add(4);
+		replyService.deleteReply(list, CommonCode.COMMENT);
+	}
+
 	
 }

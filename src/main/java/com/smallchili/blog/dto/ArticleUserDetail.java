@@ -42,6 +42,10 @@ public class ArticleUserDetail {
 		
 		private Integer commentCount;
 		
+		private Integer articleView;
+		
+		private Integer articleStatus;
+		
 		private Date createTime;
 
 	    @OneToOne

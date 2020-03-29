@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.smallchili.blog.dataobject.CommentReply;
 import com.smallchili.blog.dto.ReplyerDTO;
@@ -16,6 +17,10 @@ import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.repository.ReplyRepository;
 import com.smallchili.blog.service.ReplyService;
+import com.smallchili.blog.service.UserStarService;
+import com.smallchili.blog.utils.CommonCode;
+
+import top.springdatajpa.zujijpa.Specifications;
 
 /**
 * @author xmz
@@ -27,6 +32,8 @@ public class ReplyServiceImpl implements ReplyService{
 
 	@Autowired
 	private ReplyRepository replyRepository;
+	@Autowired
+	private UserStarService userStarService;
 	
     //配置页数
 	@Value("${pageSize}")
@@ -91,15 +98,20 @@ Function<CommentReply, ReplyerDTO> funtion = e -> {
 	}
 
 	@Override
-	public void deleteReply(List<Integer> replyIds) {
-		
-	 List<CommentReply> replyList = replyRepository.findAllById(replyIds);
-	 if(replyList.isEmpty()){
-		 throw new UserException(EmUserError.COMMENT_NOT_EXIST);
-	 }
-	 
-	 replyRepository.deleteInBatch(replyList);
-	 
+	@Transactional
+	public void deleteReply(List<Integer> ids , Integer flag) {
+	   // 查出来
+       List<CommentReply> selectedReply = replyRepository.findAll(Specifications.where(e->{
+			 if(flag == CommonCode.COMMENT){e.in("commentId", ids);} 
+			 if(flag == CommonCode.REPLY){e.in("replyId", ids);}			
+			}));
+       
+	if(!selectedReply.isEmpty() && selectedReply != null){    
+       //删除对应评论回复
+	   replyRepository.deleteInBatch(selectedReply);
+	   //删除对应点赞
+	   userStarService.deleteStar(ids,CommonCode.REPLY);
+	   }
 	}
 
 	@Override

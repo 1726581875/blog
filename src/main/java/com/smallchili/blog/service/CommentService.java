@@ -14,11 +14,13 @@ public interface CommentService {
 
 	public CommentAndReplyVO findAllCommentByArticleId(Integer articleId , Integer page);
 	
+	//public findCommentByUserId();
+	
 	public ArticleComment insertComment(ArticleComment comment);
 	
 	public void deleteComment(Integer commentId);
 	
-	public void deleteComment(List<Integer> commentIds);
+	public void deleteComment(List<Integer> ids , Integer idType);
 	
 	public void commentStar(Integer commentId,Integer star);
 	

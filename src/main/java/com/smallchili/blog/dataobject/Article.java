@@ -35,6 +35,10 @@ public class Article {
 	
 	private Integer commentCount;
 	
+	private Integer articleView;
+	
+	private Integer articleStatus;
+	
 	private Date createTime;
 
 

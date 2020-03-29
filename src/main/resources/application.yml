@@ -11,9 +11,12 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/blog?useUnicode=true&characterEncoding=utf8&useSSL=false
     username: root
     password: root
-#jpa现实语句    
+#jpa显示sql语句    
   jpa:
     show-sql: true
+    properties:
+      hibernate:
+      format_sql: true
         
 #配置每页多少条数据
 pageSize: 3

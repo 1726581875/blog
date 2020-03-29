@@ -11,6 +11,7 @@ import com.smallchili.blog.dto.ArticleUserDetail;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.service.UserStarService;
+import com.smallchili.blog.utils.CommonCode;
 import com.smallchili.blog.vo.Result;
 
 /**
@@ -43,14 +44,14 @@ public class UserStarController {
 			throw new UserException(EmUserError.PARAMETER_ERROR);
 		}
 		if(articleId != 0){
-			starService.toStar(userId, articleId, 1);
+			starService.toStar(userId, articleId, CommonCode.ARTICLE);
 			
 		}
 		if(commentId != 0){
-			starService.toStar(userId, commentId, 2);
+			starService.toStar(userId, commentId, CommonCode.COMMENT);
 		}
 		if(replyId != 0){
-			starService.toStar(userId, replyId, 3);
+			starService.toStar(userId, replyId, CommonCode.REPLY);
 		}
 		
 		return new Result<ArticleUserDetail>(EmUserError.SUCCESS,null);

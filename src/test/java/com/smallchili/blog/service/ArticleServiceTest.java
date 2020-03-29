@@ -1,5 +1,6 @@
 package com.smallchili.blog.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.criteria.Path;
@@ -16,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.smallchili.blog.dataobject.Article;
 import com.smallchili.blog.dto.ArticleHeadMsgDTO;
 import com.smallchili.blog.dto.ArticleUserDetail;
+import com.smallchili.blog.utils.CommonCode;
 import com.smallchili.blog.vo.ArticleHeadPageVO;
 
 import top.springdatajpa.zujijpa.Specifications;
@@ -93,5 +95,21 @@ public class ArticleServiceTest {
 		articlePageVO.getContent().forEach(System.out::println);
 	}
 	
+	@Test
+	public void deleteArticleByArticleIdList(){
+		List<Integer> articletIds = new ArrayList<Integer>();
+		articletIds.add(1);
+		articletIds.add(2);
+		articletIds.add(3);
+		articleService.deleteArticle(articletIds, CommonCode.ARTICLE);
+	}
 	
+	@Test
+	public void firstDeleteArticle(){
+		List<Integer> articleIds = new ArrayList<Integer>();
+		articleIds.add(1);
+		articleIds.add(2);
+		articleIds.add(3);
+		articleService.deleteOrRecoverArticle(articleIds, CommonCode.ARTICLE_DELETED);
+	}
 }

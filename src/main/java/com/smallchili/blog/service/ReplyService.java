@@ -20,7 +20,12 @@ public interface ReplyService {
 	
 	public void deleteReply(Integer replyId);
 	
-	public void deleteReply(List<Integer> replyIds);
+	/**
+	 * 根据id删除回复
+	 * @param ids (Id数组:可以是commentId,也可以是reply数组)
+	 * @param flag (1 表示传的是commentId数组 ,0表示传的是reply数组)
+	 */
+	public void deleteReply(List<Integer> ids, Integer flag);
 	
 	public void deleteReplyByCommentId(Integer commontId);
 	

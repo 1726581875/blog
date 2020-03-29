@@ -208,23 +208,25 @@ public class UserLoginController extends BaseController{
 		return new Result<Object>(EmUserError.SUCCESS,null);		
 	}
 	
+	/**
+	 * 判断用户名是否存在
+	 * @param username
+	 * @return
+	 */
+	
 	@GetMapping("/islogin")
 	public Result<Object> whetherLogin(){
 		UserDetail user = (UserDetail) httpServletRequest.getSession().getAttribute("user");
 		if(user != null){
-			return new Result<Object>(EmUserError.SUCCESS,user);
+			UserDetail newUserdetail = userDetailService.findDetailById(user.getUserId());
+			return new Result<Object>(EmUserError.SUCCESS,newUserdetail);
 		}
 		
 		throw new UserException(EmUserError.USER_NOT_LOGIN);
 		
 	 }
 	
-	
-	/**
-	 * 判断用户名是否存在
-	 * @param username
-	 * @return
-	 */
+
 	@GetMapping("user/username")
 	public Result<Object> findByUsername(@RequestParam("username") String username){
 		
@@ -232,7 +234,7 @@ public class UserLoginController extends BaseController{
 		
 		if(userLogin != null){
 			return new Result<Object>(EmUserError.SUCCESS,null);
-		}
+		}		
 		
 		throw new UserException(EmUserError.USER_NOT_EXIST);
 		

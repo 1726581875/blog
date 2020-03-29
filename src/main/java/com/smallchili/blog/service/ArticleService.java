@@ -1,5 +1,7 @@
 package com.smallchili.blog.service;
 
+import java.util.List;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import com.smallchili.blog.dataobject.Article;
@@ -14,7 +16,7 @@ import com.smallchili.blog.vo.ArticleHeadPageVO;
 
 public interface ArticleService {
 	
-	
+	public Article findById(Integer articleId);
 	/**
 	 * 2020/3/12
 	 * 说明:
@@ -25,8 +27,7 @@ public interface ArticleService {
 	 * @return 包装过的文章信息
 	 */
 	public ArticleHeadPageVO findAll(Specification<ArticleUserDetail> spec,Integer page);
-	
-	
+		
 	/**
 	 * 新增文章信息
 	 * @param article
@@ -58,5 +59,16 @@ public interface ArticleService {
 	public void articleStar(Integer articleId , Integer star);
 	
 	public void deleteArticle(Integer articleId);
+	
+	public void deleteArticle(List<Integer> ids ,Integer idsType);
+	
+	public void deleteOrRecoverArticle(List<Integer> articleIds,Integer flag);
+	
+	/**
+	 * @param articleId 文章id
+	 * @param amount 增加的加阅读量数量
+	 */
+	public void addArticleViews(Integer articleId, Integer amount);
+
 	
 }

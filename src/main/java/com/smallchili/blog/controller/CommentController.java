@@ -1,5 +1,7 @@
 package com.smallchili.blog.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,6 +17,7 @@ import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.service.CommentService;
 import com.smallchili.blog.service.ReplyService;
+import com.smallchili.blog.utils.CommonCode;
 import com.smallchili.blog.vo.CommentAndReplyVO;
 import com.smallchili.blog.vo.Result;
 
@@ -107,8 +110,8 @@ public class CommentController extends BaseController{
 	 * @return
 	 */
 	@PostMapping("/delete")
-	public Object deleteComment(@RequestParam("commentId") Integer commentId){	
-     commentService.deleteComment(commentId);
+	public Object deleteComment(@RequestParam("commentIds[]") List<Integer> commentIds){	
+     commentService.deleteComment(commentIds, CommonCode.COMMENT);
 	return new Result<Object>(EmUserError.SUCCESS,null);
 	}
 	
@@ -118,8 +121,8 @@ public class CommentController extends BaseController{
 	 * @return
 	 */
 	@PostMapping("/delete/reply")
-	public Object deleteReply(@RequestParam("replyId") Integer replyId){	
-		replyService.deleteReply(replyId);	
+	public Object deleteReply(@RequestParam("replyIds[]") List<Integer> replyIds){	
+	 replyService.deleteReply(replyIds, CommonCode.REPLY);
 	return new Result<Object>(EmUserError.SUCCESS,null);
 	}
 }

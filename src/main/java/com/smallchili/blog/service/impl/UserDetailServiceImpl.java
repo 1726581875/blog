@@ -2,7 +2,6 @@ package com.smallchili.blog.service.impl;
 
 import java.util.Optional;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +11,6 @@ import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.repository.UserDetailRepository;
 import com.smallchili.blog.service.UserDetailService;
 import com.smallchili.blog.utils.RandomUtil;
-import com.smallchili.blog.vo.OtherUserDetailVO;
 /**
  * 用户详情业务实现类
  *
@@ -39,26 +37,6 @@ public class UserDetailServiceImpl implements UserDetailService{
 			
 	}
 
-	@Override
-	public OtherUserDetailVO findOtherDetailByName(Integer userId,Integer page) {
-		//查找UserDetail
-		Optional<UserDetail> optional = userDetailRepository.findById(userId);
-		//若不存在
-		if(!optional.isPresent()){
-			throw new UserException(EmUserError.USER_NOT_EXIST);
-		}
-		//查出该用户的所有文章
-	//	List<ArticleHeadMsgDTO>  articleList = articleService.findAllAricleByUserId(userId,page);
-		
-		//返回给前端页面的包装类
-		OtherUserDetailVO otherUserDetailVO = new OtherUserDetailVO();
-		//UserDetail copy to otherUserDetailVO
-		BeanUtils.copyProperties(optional.get(), otherUserDetailVO);
-		//把文章信息放进去
-		//otherUserDetailVO.setContent(articleList);
-		
-		return otherUserDetailVO;
-	}
 	
 	@Override
 	public UserDetail updateUserDetail(UserDetail userDetail) {

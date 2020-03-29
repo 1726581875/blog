@@ -26,7 +26,9 @@ public enum EmUserError implements CommonError{
 	COMMENT_NOT_EXIST(20000,"评论不存在"),
 	
 	//文章
-	ARTICLE_NOT_EXISI(30000,"评论文章不存在")
+	ARTICLE_NOT_EXISI(30000,"文章不存在"),
+	
+	COLLECTION_REPEAT(11111,"重复收藏")
 	;
 	
 

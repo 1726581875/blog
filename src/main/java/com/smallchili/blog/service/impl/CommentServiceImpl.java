@@ -16,15 +16,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.smallchili.blog.dataobject.ArticleComment;
-import com.smallchili.blog.dataobject.CommentReply;
 import com.smallchili.blog.dto.CommentAndReplyDTO;
-import com.smallchili.blog.dto.ReplyerDTO;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.repository.CommentRepository;
-import com.smallchili.blog.repository.ReplyRepository;
 import com.smallchili.blog.service.CommentService;
 import com.smallchili.blog.service.ReplyService;
+import com.smallchili.blog.service.UserStarService;
+import com.smallchili.blog.utils.CommonCode;
 import com.smallchili.blog.vo.CommentAndReplyVO;
 
 import top.springdatajpa.zujijpa.Specifications;
@@ -37,14 +36,11 @@ import top.springdatajpa.zujijpa.Specifications;
 @Service
 public class CommentServiceImpl implements CommentService{
 	@Autowired
-    private CommentRepository commentRepository;
-	  
-	@Autowired
-    private ReplyRepository replyRepository;
-	
+    private CommentRepository commentRepository;	  
     @Autowired
     private ReplyService replyService;
-    
+    @Autowired
+    private UserStarService userStarService;
   //配置页数
   	@Value("${pageSize}")
   	private Integer pageSize;
@@ -59,6 +55,7 @@ public class CommentServiceImpl implements CommentService{
 
 
 	@Override
+	@Transactional
 	public CommentAndReplyVO findAllCommentByArticleId(Integer articleId, Integer page) {
 		
 		//构造查询的页，和每页大小
@@ -86,8 +83,6 @@ public class CommentServiceImpl implements CommentService{
 	Function<ArticleComment, CommentAndReplyDTO> myfunction = e -> {
 		CommentAndReplyDTO commentAndReply= new CommentAndReplyDTO();			
 		BeanUtils.copyProperties(e, commentAndReply);
-		List<ReplyerDTO> replyList = replyService.findAllReplyByComnentId(e.getCommentId());
-		commentAndReply.setReplyList(replyList);
 		commentAndReply.setUserName(e.getReplyer().getUserName());
 		commentAndReply.setUserImage(e.getReplyer().getUserImage());
 		return commentAndReply;
@@ -111,14 +106,26 @@ public class CommentServiceImpl implements CommentService{
 	
 	@Override
 	@Transactional
-	public void deleteComment(List<Integer> commentIds) {
+	public void deleteComment(List<Integer> ids , Integer idType) {
 
-		Specification<CommentReply> spec = Specifications.where(e->{
-					e.eq("commentIds",commentIds); 
+		Specification<ArticleComment> spec = Specifications.where(e->{
+				if(idType == CommonCode.COMMENT)e.in("commentId",ids); 
+				if(idType == CommonCode.ARTICLE)e.in("articleId",ids);
 			 });
+		//查找出来评论List
+		List<ArticleComment> commentList = commentRepository.findAll(spec);
 		
-		replyRepository.findAll(spec).forEach(System.out::println);
-		
+		if(!commentList.isEmpty() && commentList != null){
+		//1.删除评论
+		commentRepository.deleteInBatch(commentList);		
+		//拿到评论id的List
+		List<Integer> commentIdList = commentList.stream().map(e ->e.getCommentId()
+		).collect(Collectors.toList());		
+		//2.删除评论的回复		
+		replyService.deleteReply(commentIdList, CommonCode.COMMENT);
+		//3.删除评论的点赞
+		userStarService.deleteStar(commentIdList, CommonCode.COMMENT);
+		}
 	}
 
 

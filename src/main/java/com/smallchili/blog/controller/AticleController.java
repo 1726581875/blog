@@ -1,10 +1,11 @@
 package com.smallchili.blog.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,10 +14,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.smallchili.blog.dataobject.Article;
+import com.smallchili.blog.dataobject.UserDetail;
 import com.smallchili.blog.dto.ArticleUserDetail;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.service.ArticleService;
+import com.smallchili.blog.utils.CheckUtil;
+import com.smallchili.blog.utils.CommonCode;
 import com.smallchili.blog.vo.ArticleHeadPageVO;
 import com.smallchili.blog.vo.Result;
 
@@ -47,7 +51,10 @@ public class AticleController extends BaseController{
 	public Result<ArticleHeadPageVO> findArticlesByCondition(Article article,
 			                 @RequestParam(value = "page",defaultValue="1") Integer page,
 			                 HttpSession session){
-		
+		//若状态不传,默认是查正常状态的文章
+	     if(article.getArticleStatus() == null)
+	    	 article.setArticleStatus(CommonCode.ARTICLE_NORMAL);
+	     
 		//构造条件
 	     Specification<ArticleUserDetail> spec = Specifications.where(e ->{
 	    	 if(article.getBigType() != null){
@@ -62,6 +69,7 @@ public class AticleController extends BaseController{
 	    	 if(article.getArticleTitle()!= null){
 	    		e.like("articleTitle", "%"+article.getArticleTitle()+"%");
 	    	}
+             e.eq("articleStatus", article.getArticleStatus());
 	     });
 		
 		//调用查找方法	
@@ -79,17 +87,9 @@ public class AticleController extends BaseController{
 	 * @return
 	 */
 	@PostMapping("/insert")
-	public Result<Object> insertArticle(Article article ,HttpSession session){
-		
-
-		
+	public Result<Object> insertArticle(Article article ,HttpSession session){	
 		//简单校验参数
-		if(StringUtils.isEmpty(article.getArticleTitle())
-				|| StringUtils.isEmpty(article.getArticleContent())
-				|| StringUtils.isEmpty(article.getBigType())
-			    || StringUtils.isEmpty(article.getArticleType())
-                || StringUtils.isEmpty(article.getUserId())){
-						
+		if(!CheckUtil.checkArticle(article)){
 			throw new UserException(EmUserError.PARAMETER_ERROR);
 		}
 		
@@ -113,13 +113,7 @@ public class AticleController extends BaseController{
 	public Result<Object> updatetArticle(Article article ,HttpSession session){
 				
 		//简单校验参数
-		if(StringUtils.isEmpty(article.getArticleId())
-				||StringUtils.isEmpty(article.getArticleTitle())
-				|| StringUtils.isEmpty(article.getArticleContent())
-				|| StringUtils.isEmpty(article.getBigType())
-			    || StringUtils.isEmpty(article.getArticleType())
-			    || StringUtils.isEmpty(article.getUserId())){
-						
+		if(!CheckUtil.checkArticle(article)){
 			throw new UserException(EmUserError.PARAMETER_ERROR);
 		}
 		
@@ -143,24 +137,51 @@ public class AticleController extends BaseController{
 	public Object findArticleById(@RequestParam("articleId") Integer articleId){
 		
 		ArticleUserDetail articleUserDetail = articleService.findArticleById(articleId);
-		
+		//阅读量加一
+		articleService.addArticleViews(articleId, 1);
 		return new Result<ArticleUserDetail>(EmUserError.SUCCESS,articleUserDetail);
 	}
 	
 	
 	/**
-	 * 删除文章
+	 * 删除文章,假删除
 	 * @param articleId
 	 * @return
 	 */
 	@PostMapping("/delete")
-	public Object deleteAreticle(@RequestParam("articleId") Integer articleId,
-			                     @RequestParam("userId") Integer userId){
-		
-		 articleService.deleteArticle(articleId);
-		
+	public Object deleteAreticle(@RequestParam("articleIds") List<Integer> articleIds){		
+	  articleService.deleteOrRecoverArticle(articleIds, CommonCode.ARTICLE_DELETED);
+	  return new Result<ArticleUserDetail>(EmUserError.SUCCESS,null);
+	}
+	
+	/**
+	 * 从回收站恢复
+	 * @param articleIds id数组
+	 * @return
+	 */
+	@PostMapping("/recover")
+	public Object recoverAreticle(@RequestParam("articleIds[]") List<Integer> articleIds){		
+		articleService.deleteOrRecoverArticle(articleIds, CommonCode.ARTICLE_NORMAL);		
 		return new Result<ArticleUserDetail>(EmUserError.SUCCESS,null);
 	}
+	
+	
+	/**
+	 * 永久删除文章,真删
+	 * @param articleId
+	 * @return
+	 */
+	@PostMapping("/delete/forever")
+	public Object foreverDeleteAreticle(@RequestParam("articleIds") List<Integer> articleIds ,
+			@RequestParam("userId") Integer userId,HttpSession session){
+		UserDetail user = (UserDetail) session.getAttribute("user");
+		if(user==null || user.getUserId()!=userId){
+			throw new UserException(EmUserError.USER_NOT_LOGIN);
+		}
+	  articleService.deleteArticle(articleIds, CommonCode.ARTICLE);
+	  return new Result<ArticleUserDetail>(EmUserError.SUCCESS,null);
+	}
+	
 	
 	
 }

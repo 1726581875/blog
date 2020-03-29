@@ -27,6 +27,8 @@ public class ArticleHeadMsgDTO {
 
 	private Integer commentCount;
 	
+	private Integer articleView;
+	
 	private Date createTime;
 
 	

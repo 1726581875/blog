@@ -25,7 +25,12 @@ import com.smallchili.blog.repository.ArticleRepository;
 import com.smallchili.blog.repository.ArticleUserDTORepository;
 import com.smallchili.blog.repository.UserDetailRepository;
 import com.smallchili.blog.service.ArticleService;
+import com.smallchili.blog.service.CommentService;
+import com.smallchili.blog.service.ReplyService;
+import com.smallchili.blog.utils.CommonCode;
 import com.smallchili.blog.vo.ArticleHeadPageVO;
+
+import top.springdatajpa.zujijpa.Specifications;
 
 /**
 * @author xmz
@@ -37,18 +42,27 @@ import com.smallchili.blog.vo.ArticleHeadPageVO;
 public class ArticleServiceImpl implements ArticleService{
 	
 	@Autowired
-	private ArticleRepository articleRepository;
-	
+	private ArticleRepository articleRepository;	
 	@Autowired
 	private ArticleUserDTORepository articleUserDTORepository;
-	
 	@Autowired
 	private UserDetailRepository userDetailRepository;
-	
-	
+	@Autowired
+	private CommentService commentService;
+	@Autowired
+	private ReplyService replyService;
     //配置页数
 	@Value("${pageSize}")
 	private Integer pageSize;
+	
+	@Override
+	public Article findById(Integer articleId) {
+		Optional<Article> optional = articleRepository.findById(articleId);
+		if(!optional.isPresent()){
+			throw new UserException(EmUserError.ARTICLE_NOT_EXISI);
+		}		
+		return optional.get();
+	}
 	
 	@Override
 	public ArticleHeadPageVO findAll(Specification<ArticleUserDetail> spec, Integer page) {
@@ -104,11 +118,12 @@ public class ArticleServiceImpl implements ArticleService{
 	 Optional<UserDetail> userOptional = userDetailRepository.findById(article.getUserId());
      if(!userOptional.isPresent()){
     	 throw new UserException(EmUserError.USER_NOT_EXIST);
-     }
-	 
+     }	 
 		//把点赞数和评论数为0
 		article.setArticleStar(0);
-		article.setCommentCount(0);	
+		article.setCommentCount(0);
+		article.setArticleView(0);
+		article.setArticleStatus(article.getArticleStatus());
 		return articleRepository.save(article);
 	}
 
@@ -135,8 +150,8 @@ public class ArticleServiceImpl implements ArticleService{
 		if(article.getArticleType() != null){
 			updateArticle.setArticleType(article.getArticleType());
 		}
-		if(article.getArticleStar() != null){
-			updateArticle.setArticleStar(article.getArticleStar());
+		if(article.getArticleStatus() != null){
+			updateArticle.setArticleStatus(article.getArticleStatus());
 		}
 		
 		return articleRepository.save(updateArticle);
@@ -168,11 +183,58 @@ public class ArticleServiceImpl implements ArticleService{
 	@Override
 	@Transactional
 	public void deleteArticle(Integer articleId) {
-		
-		
+			
 		articleRepository.deleteById(articleId);
-		
-		
+			
 	}
+
+	@Override
+	@Transactional
+	public void deleteArticle(List<Integer> ids, Integer idType) {
+				
+		//先查出来
+		List<Article> articleList = articleRepository.findAll(Specifications.where(e->{
+			if(idType == CommonCode.USER)e.in("userId",ids); 
+			if(idType == CommonCode.ARTICLE){
+			e.in("articleId",ids);
+			e.eq("articleStatus", CommonCode.ARTICLE_DELETED);
+			}
+		 }));
+		
+	if(!articleList.isEmpty() && articleList != null){
+		
+		//删除文章
+		articleRepository.deleteInBatch(articleList); 
+		//取出id的List
+		List<Integer> articleIdList = articleList.stream()
+				  .map(e -> e.getArticleId()).collect(Collectors.toList());
+		//删除所有文章评论
+		commentService.deleteComment(articleIdList,CommonCode.ARTICLE);
+		//删除文章的点赞记录
+		replyService.deleteReply(articleIdList, CommonCode.ARTICLE);
+		}
+	}
+	
+	@Override
+	public void deleteOrRecoverArticle(List<Integer> ids ,Integer flag) {
+		//查出来
+		List<Article> articleList = articleRepository.findAll(Specifications.where(e->{
+		    e.in("articleId",ids);
+			if(flag==CommonCode.ARTICLE_DELETED)e.eq("articleStatus", CommonCode.ARTICLE_NORMAL);
+			if(flag==CommonCode.ARTICLE_NORMAL)e.eq("articleStatus", CommonCode.ARTICLE_DELETED);
+		 }));
+		
+		articleList.stream().forEach(e -> e.setArticleStatus(flag));
+		articleRepository.saveAll(articleList);
+	}
+	
+
+	@Override
+	public void addArticleViews(Integer articleId, Integer amount) {
+         Article article = findById(articleId);
+         article.setArticleView(article.getArticleView() + amount);
+		 articleRepository.save(article);
+	}
+
 
 }

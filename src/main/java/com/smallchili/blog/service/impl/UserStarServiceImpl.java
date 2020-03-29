@@ -1,5 +1,7 @@
 package com.smallchili.blog.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +12,9 @@ import com.smallchili.blog.service.ArticleService;
 import com.smallchili.blog.service.CommentService;
 import com.smallchili.blog.service.ReplyService;
 import com.smallchili.blog.service.UserStarService;
+import com.smallchili.blog.utils.CommonCode;
+
+import top.springdatajpa.zujijpa.Specifications;
 
 /**
 * @author xmz
@@ -40,23 +45,23 @@ public class UserStarServiceImpl implements UserStarService{
 			starMsg.setObjId(objId);
 			starMsg.setStarType(starType);
 			userStarRepository.save(starMsg);
-			toChangeStarSum(objId,starType,1);
+			toChangeStarSum(objId,starType,CommonCode.STAR_UP);
 			
 		}else{
 			userStarRepository.deleteById(userStar.getStarId());
-			toChangeStarSum(objId,starType,-1);
+			toChangeStarSum(objId,starType,CommonCode.STAR_DOWN);
 		}
 	}
 
 	
 	public void toChangeStarSum(Integer objId,Integer starType,int star){
-		if(starType == 1){
+		if(starType == CommonCode.ARTICLE){
 		articleService.articleStar(objId, star);
 		}
-		if(starType == 2){
+		if(starType == CommonCode.COMMENT){
 		commentService.commentStar(objId, star);
 		}
-		if(starType == 3){
+		if(starType == CommonCode.REPLY){
 		replyService.replyStar(objId, star);
 		}
 	}
@@ -68,6 +73,19 @@ public class UserStarServiceImpl implements UserStarService{
 			return false;
 		}
 		return true;
+	}
+
+
+	@Override
+	public void deleteStar(List<Integer> objIds, Integer starType) {
+		List<UserStar> list = userStarRepository.findAll(Specifications.where(e->{
+			 if(starType == CommonCode.ARTICLE){e.in("objId", objIds);} 
+			 if(starType == CommonCode.COMMENT){e.in("objId", objIds);}
+			 if(starType == CommonCode.REPLY){e.in("objId", objIds);}
+			}));
+		
+		if(!list.isEmpty() && list != null)
+		userStarRepository.deleteInBatch(list);
 	}
 
 }
