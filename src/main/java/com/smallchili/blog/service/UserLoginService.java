@@ -5,6 +5,8 @@ import com.smallchili.blog.error.UserException;
 
 public interface UserLoginService {
 
+	UserLogin findById(Integer userId);
+	
 	UserLogin findByUsername(String username);
 	
 	UserLogin loginByPassword(String username,String password) throws UserException;
@@ -14,6 +16,8 @@ public interface UserLoginService {
 	UserLogin register(UserLogin userLogin);
 	
 	UserLogin updatePasswordByPhone(String userPhone,String password);
+	
+	UserLogin updatePassword(Integer userId,String oldPassword,String newPassword);
 	
 	public void delete(Integer userId);
 	

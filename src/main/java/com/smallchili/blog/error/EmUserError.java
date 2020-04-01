@@ -14,9 +14,10 @@ public enum EmUserError implements CommonError{
 	PHONE_IS_NULL(10006,"手机号不能为空"),	
 	USER_PHONE_REEOR(10007,"手机号错误"),	
 	USER_PHONE_REPEAT(10008,"手机号已存在"),
+	PHONE_NOT_EXIST(10018,"手机号不存在"),
 	PHONE_OTP_ERROR(10009,"验证码错误"),
 	REGISTER_FAIL(10010,"注册失败,未知错误"),
-	USER_NOT_LOGIN(10010,"用户还没登录"),	
+	USER_NOT_LOGIN(10011,"用户还没登录"),	
 	
 	//分类
 	CATEGORY_REPEAT(10011,"分类重复"),

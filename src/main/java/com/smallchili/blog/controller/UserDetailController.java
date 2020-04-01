@@ -2,6 +2,8 @@ package com.smallchili.blog.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -216,7 +218,7 @@ public class UserDetailController extends BaseController {
 			throw new UserException(EmUserError.PHONE_OTP_ERROR);
 		}	
 		
-		//查出userDetail
+		//调用更新,并查出userDetail
 		 UserLogin user = userLoginService.updatePasswordByPhone(userPhone, password);
 		 if(user == null){
 			 throw new UserException(EmUserError.UNKONW_ERROR);
@@ -225,7 +227,45 @@ public class UserDetailController extends BaseController {
 		
     	 return new Result<Object>(EmUserError.SUCCESS,null);
      }
+   @PostMapping("/update/oldPassword")
+	public Object updatePasswordByPassword(@RequestParam("userId") Integer userId,
+			@RequestParam("oldPassword") String oldPassword,
+            @RequestParam("newPassword") String newPassword){
+		
+	   //入参格式校验
+		if(StringUtils.isEmpty(userId)
+		||StringUtils.isEmpty(oldPassword)
+        ||StringUtils.isEmpty(newPassword)){
+			throw new UserException(EmUserError.PARAMETER_ERROR);
+		}
+	  userLoginService.updatePassword(userId, oldPassword, newPassword);
+	  
+		return new Result<Object>(EmUserError.SUCCESS,null);
+	}
 	
+	@GetMapping("/username")
+	public Result<Object> findByUsername(@RequestParam("username") String username){
+		
+		UserLogin userLogin = userLoginService.findByUsername(username);
+		
+		if(userLogin != null){
+			return new Result<Object>(EmUserError.SUCCESS,null);
+		}		
+		
+		throw new UserException(EmUserError.USER_NOT_EXIST);
+		
+	 }
+	
+	
+	@GetMapping("/getPhone")
+	public Result<Object> getPhoneByUserId(@RequestParam("userId") Integer userId){
+		
+		UserLogin userLogin = userLoginService.findById(userId);
+		    Map<String,String> map = new HashMap<String,String>();
+		    map.put("userPhone", userLogin.getUserPhone());
+			return new Result<Object>(EmUserError.SUCCESS,map);
+		
+	 }
 	
 
 }

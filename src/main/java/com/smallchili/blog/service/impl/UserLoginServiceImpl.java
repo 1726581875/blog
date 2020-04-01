@@ -1,6 +1,8 @@
 package com.smallchili.blog.service.impl;
 
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -115,6 +117,27 @@ public String getMD5(String str){
 public UserLogin findByUsername(String username) {
 	
 	return userLoginRepository.findByUsername(username);
+}
+
+@Override
+public UserLogin findById(Integer userId) {
+	Optional<UserLogin> optional = userLoginRepository.findById(userId);
+	if(!optional.isPresent()){
+		throw new UserException(EmUserError.USER_NOT_EXIST);
+	}
+	return optional.get();
+}
+
+@Override
+public UserLogin updatePassword(Integer userId, String oldPassword, String newPassword) {
+	UserLogin userLogin = findById(userId);
+	 
+	if(!userLogin.getPassword().equals(getMD5(oldPassword))){
+		throw new UserException(EmUserError.PASSWORD_ERROR);
+	}
+	userLogin.setPassword(getMD5(newPassword));
+	
+	return userLoginRepository.save(userLogin);
 }
 
 

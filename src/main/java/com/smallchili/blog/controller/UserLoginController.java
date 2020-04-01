@@ -44,11 +44,19 @@ public class UserLoginController extends BaseController{
 	 * @return
 	 */
 	@PostMapping("/phone/getotp")
-	public Result<Map<String,String>> getOtp(@RequestParam("userPhone") String userPhone){
+	public Result<Map<String,String>> getOtp(@RequestParam("userPhone") String userPhone,
+			@RequestParam(value = "phoneVerify",defaultValue="false") boolean phoneVerify){
 		
 		if(StringUtils.isEmpty(userPhone) 
 				|| !CheckUtil.checkPhone(userPhone)){
 			throw new UserException(EmUserError.USER_PHONE_REEOR);
+		}
+		//是否验证手机号
+		if(phoneVerify){
+			if(userLoginService.loginByPhone(userPhone) == null){
+				new UserException(EmUserError.PHONE_NOT_EXIST);
+			}
+			
 		}
 		
 		//随机获取四位数otp验证码
@@ -227,18 +235,7 @@ public class UserLoginController extends BaseController{
 	 }
 	
 
-	@GetMapping("user/username")
-	public Result<Object> findByUsername(@RequestParam("username") String username){
-		
-		UserLogin userLogin = userLoginService.findByUsername(username);
-		
-		if(userLogin != null){
-			return new Result<Object>(EmUserError.SUCCESS,null);
-		}		
-		
-		throw new UserException(EmUserError.USER_NOT_EXIST);
-		
-	 }
+
 	
 	
 	

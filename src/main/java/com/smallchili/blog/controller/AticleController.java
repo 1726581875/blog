@@ -1,10 +1,17 @@
 package com.smallchili.blog.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.smallchili.blog.dataobject.Article;
 import com.smallchili.blog.dataobject.UserDetail;
@@ -39,6 +47,8 @@ public class AticleController extends BaseController{
 	@Autowired
 	private ArticleService articleService;
 	
+	@Value("${imagePath}")
+	private String IMAGE_PATH;
 	
 	/**
 	 * 2020/3/13
@@ -182,6 +192,35 @@ public class AticleController extends BaseController{
 	  return new Result<ArticleUserDetail>(EmUserError.SUCCESS,null);
 	}
 	
+	
+	 @PostMapping(value = "/image")
+	    public Map<String,String> fileUpload(@RequestParam(value = "fileName") MultipartFile file, HttpServletRequest request) {
+	        if (file.isEmpty()) {
+	            System.out.println("文件为空空");
+	        }
+	        String fileName = file.getOriginalFilename();  // 文件名
+	        String suffixName = fileName.substring(fileName.lastIndexOf("."));  // 后缀名
+    
+	        String filePath = IMAGE_PATH;
+  
+	        fileName = UUID.randomUUID() + suffixName; // 新文件名
+	        File dest = new File(filePath + fileName);	   
+	        
+	        if (!dest.getParentFile().exists()) {
+	            dest.getParentFile().mkdirs();
+	        }
+	        try {
+	            file.transferTo(dest);
+	        } catch (IOException e) {	        
+	            e.printStackTrace();
+	        }
+	        String filename = "/image/" + fileName;
+	        System.out.println(filename);
+	        Map<String,String> hashmap =  new HashMap<String,String>();
+	        hashmap.put("pic", filename);
+	        
+	        return hashmap;
+	    }
 	
 	
 }
