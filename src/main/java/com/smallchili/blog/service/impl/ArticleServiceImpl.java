@@ -197,7 +197,8 @@ public class ArticleServiceImpl implements ArticleService{
 			if(idType == CommonCode.USER)e.in("userId",ids); 
 			if(idType == CommonCode.ARTICLE){
 			e.in("articleId",ids);
-			e.eq("articleStatus", CommonCode.ARTICLE_DELETED);
+			e.or(e2 -> e2.eq("articleStatus", CommonCode.ARTICLE_DELETED)
+					     .eq("articleStatus", CommonCode.ARTICLE_DRAFT));
 			}
 		 }));
 		
@@ -222,6 +223,7 @@ public class ArticleServiceImpl implements ArticleService{
 		    e.in("articleId",ids);
 			if(flag==CommonCode.ARTICLE_DELETED)e.eq("articleStatus", CommonCode.ARTICLE_NORMAL);
 			if(flag==CommonCode.ARTICLE_NORMAL)e.eq("articleStatus", CommonCode.ARTICLE_DELETED);
+			if(flag==CommonCode.ARTICLE_DRAFT)e.eq("articleStatus", CommonCode.ARTICLE_DRAFT);
 		 }));
 		
 		articleList.stream().forEach(e -> e.setArticleStatus(flag));

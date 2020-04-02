@@ -97,7 +97,7 @@ public class AticleController extends BaseController{
 	 * @return
 	 */
 	@PostMapping("/insert")
-	public Result<Object> insertArticle(Article article ,HttpSession session){	
+	public Result<Object> insertArticle(Article article,HttpSession session){	
 		//简单校验参数
 		if(!CheckUtil.checkArticle(article)){
 			throw new UserException(EmUserError.PARAMETER_ERROR);
@@ -111,6 +111,34 @@ public class AticleController extends BaseController{
 		
 		return new Result<Object>(EmUserError.SUCCESS,inserArticle);
 	}
+	
+
+	/**
+	 * 从草稿箱上传文章
+	 * @param articleIds
+	 * @return
+	 */
+	@PostMapping("/insert/fromDraft")
+	public Result<Object> insertArticleFromDraft(@RequestParam("articleIds") List<Integer> articleIds){	
+		
+		articleService.deleteOrRecoverArticle(articleIds, CommonCode.ARTICLE_NORMAL);		
+		
+		return new Result<Object>(EmUserError.SUCCESS,null);
+	}
+	
+	/**
+	 * 文章变草稿状态,下架
+	 * @param articleIds
+	 * @return
+	 */
+	@PostMapping("/toDraft")
+	public Result<Object> articleToDraft(@RequestParam("articleIds") List<Integer> articleIds){	
+		
+		articleService.deleteOrRecoverArticle(articleIds, CommonCode.ARTICLE_DRAFT);		
+		
+		return new Result<Object>(EmUserError.SUCCESS,null);
+	}
+	
 	
 	
 	/**
@@ -161,7 +189,7 @@ public class AticleController extends BaseController{
 	@PostMapping("/delete")
 	public Object deleteAreticle(@RequestParam("articleIds") List<Integer> articleIds){		
 	  articleService.deleteOrRecoverArticle(articleIds, CommonCode.ARTICLE_DELETED);
-	  return new Result<ArticleUserDetail>(EmUserError.SUCCESS,null);
+	  return new Result<Object>(EmUserError.SUCCESS,null);
 	}
 	
 	/**
@@ -172,7 +200,7 @@ public class AticleController extends BaseController{
 	@PostMapping("/recover")
 	public Object recoverAreticle(@RequestParam("articleIds[]") List<Integer> articleIds){		
 		articleService.deleteOrRecoverArticle(articleIds, CommonCode.ARTICLE_NORMAL);		
-		return new Result<ArticleUserDetail>(EmUserError.SUCCESS,null);
+		return new Result<Object>(EmUserError.SUCCESS,null);
 	}
 	
 	
@@ -193,8 +221,14 @@ public class AticleController extends BaseController{
 	}
 	
 	
-	 @PostMapping(value = "/image")
-	    public Map<String,String> fileUpload(@RequestParam(value = "fileName") MultipartFile file, HttpServletRequest request) {
+	 /**
+	  * 文章图片上传
+	 * @param file
+	 * @param request
+	 * @return
+	 */
+	@PostMapping(value = "/image")
+ public Object fileUpload(@RequestParam(value = "fileName") MultipartFile file, HttpServletRequest request) {
 	        if (file.isEmpty()) {
 	            System.out.println("文件为空空");
 	        }
@@ -219,7 +253,7 @@ public class AticleController extends BaseController{
 	        Map<String,String> hashmap =  new HashMap<String,String>();
 	        hashmap.put("pic", filename);
 	        
-	        return hashmap;
+	        return new Result<Object>(EmUserError.SUCCESS, hashmap);
 	    }
 	
 	
