@@ -27,6 +27,8 @@ import com.smallchili.blog.dto.ArticleUserDetail;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.service.ArticleService;
+import com.smallchili.blog.service.CollectionService;
+import com.smallchili.blog.service.UserStarService;
 import com.smallchili.blog.utils.CheckUtil;
 import com.smallchili.blog.utils.CommonCode;
 import com.smallchili.blog.vo.ArticleHeadPageVO;
@@ -46,6 +48,12 @@ public class AticleController extends BaseController{
 
 	@Autowired
 	private ArticleService articleService;
+	
+	@Autowired
+	private UserStarService starService;
+	
+	@Autowired
+	private CollectionService collectionService;
 	
 	@Value("${imagePath}")
 	private String IMAGE_PATH;
@@ -88,6 +96,32 @@ public class AticleController extends BaseController{
 		return   new Result<ArticleHeadPageVO>(EmUserError.SUCCESS,pageVO);
 	}
 	
+	
+	
+	/**
+	 * 
+	 * 查找文章信息
+	 * @param articleId
+	 * @return
+	 */
+	@GetMapping("/detail")
+	public Object findArticleById(@RequestParam("articleId") Integer articleId ,HttpSession session){
+		
+		ArticleUserDetail articleUserDetail = articleService.findArticleById(articleId);
+		//看用户是否登录
+		UserDetail user = (UserDetail) session.getAttribute("user");
+		if(user!=null){
+		boolean isStar = starService.
+				 isStar(user.getUserId(), articleId, CommonCode.ARTICLE);
+		boolean isCollection = collectionService.isCollection(user.getUserId(), articleId);
+		articleUserDetail.setCollection(isCollection);
+		articleUserDetail.setStar(isStar);
+		}	
+		
+		//阅读量加一
+		articleService.addArticleViews(articleId, 1);
+		return new Result<ArticleUserDetail>(EmUserError.SUCCESS,articleUserDetail);
+	}
 	
 	
 	/**
@@ -164,22 +198,7 @@ public class AticleController extends BaseController{
 		return new Result<Object>(EmUserError.SUCCESS,updateArticle);
 	}
 	
-	
-	/**
-	 * 
-	 * 查找文章信息
-	 * @param articleId
-	 * @return
-	 */
-	@GetMapping("/detail")
-	public Object findArticleById(@RequestParam("articleId") Integer articleId){
-		
-		ArticleUserDetail articleUserDetail = articleService.findArticleById(articleId);
-		//阅读量加一
-		articleService.addArticleViews(articleId, 1);
-		return new Result<ArticleUserDetail>(EmUserError.SUCCESS,articleUserDetail);
-	}
-	
+
 	
 	/**
 	 * 删除文章,假删除

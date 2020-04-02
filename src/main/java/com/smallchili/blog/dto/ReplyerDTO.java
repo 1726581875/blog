@@ -2,6 +2,8 @@ package com.smallchili.blog.dto;
 
 import java.util.Date;
 
+import javax.persistence.Transient;
+
 import lombok.Data;
 
 /**
@@ -13,6 +15,8 @@ import lombok.Data;
 @Data
 public class ReplyerDTO {
 
+	private Integer replyId;
+	
 	private Integer replyerId;
 	
 	private String replyerName;
@@ -30,4 +34,6 @@ public class ReplyerDTO {
 	private Integer replyStar;
 	
 	private Date createTime;
+	
+    private boolean isStar;
 }

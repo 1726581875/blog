@@ -43,7 +43,7 @@ public class CommentServiceTest {
 	public void testFindAllComment(){
 		Integer articleId = 1;
 		Integer page = 1;
-		commentService.findAllCommentByArticleId(articleId, page)
+		commentService.findAllCommentByArticleId(articleId, page,1)
 		.getCommentList().forEach(System.out::println);
 	}
 	

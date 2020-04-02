@@ -1,5 +1,6 @@
 package com.smallchili.blog.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -16,7 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.smallchili.blog.dataobject.ArticleComment;
+import com.smallchili.blog.dataobject.CommentReply;
+import com.smallchili.blog.dataobject.UserStar;
 import com.smallchili.blog.dto.CommentAndReplyDTO;
+import com.smallchili.blog.dto.ReplyerDTO;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.repository.CommentRepository;
@@ -35,6 +39,10 @@ import top.springdatajpa.zujijpa.Specifications;
 */
 @Service
 public class CommentServiceImpl implements CommentService{
+	
+	List<UserStar> commentStar;
+    List<UserStar> replyStar;
+	
 	@Autowired
     private CommentRepository commentRepository;	  
     @Autowired
@@ -55,8 +63,7 @@ public class CommentServiceImpl implements CommentService{
 
 
 	@Override
-	@Transactional
-	public CommentAndReplyVO findAllCommentByArticleId(Integer articleId, Integer page) {
+	public CommentAndReplyVO findAllCommentByArticleId(Integer articleId, Integer page,Integer userId) {
 		
 		//构造查询的页，和每页大小
 		Pageable pageable = PageRequest.of(page-1,pageSize);	
@@ -65,29 +72,87 @@ public class CommentServiceImpl implements CommentService{
 		Specification<ArticleComment> spec = Specifications.where(e->{
 			e.eq("articleId",articleId); 
 		});
-		
+		//查询
 		Page<ArticleComment> commentPage = commentRepository.findAll(spec, pageable);
 		List<ArticleComment> commentList = commentPage.getContent();
+		
+		//userId != 0 表示要检查是否点赞
+		if(userId != 0){
+			//拿到评论Id数组
+		    List<Integer> commentIds = commentList.stream().map(e -> e.getCommentId()).collect(Collectors.toList());
+		    List<Integer> replyIds = new ArrayList<Integer>();
+		    commentList.forEach(e -> replyIds.addAll(
+		    		e.getReplyList().stream().map(e2 -> e2.getReplyId()).collect(Collectors.toList())
+		    		));
+		   //拿到回复Id数组
+		    if(commentIds != null && !commentIds.isEmpty()){
+		     commentStar = userStarService.findUserStar(userId,commentIds, CommonCode.COMMENT);		   
+		    }
+		    if(replyIds != null && !replyIds.isEmpty()){
+		    replyStar = userStarService.findUserStar(userId,replyIds, CommonCode.REPLY);		 
+		    }
+		   
+		};
+		
+		//转换,只拿要显示的属性
 		List<CommentAndReplyDTO> commentAndReplyDTOList 
 		  = commentList.stream().map(e -> {
 			return myfunction.apply(e);
 		}).collect(Collectors.toList());
-			
+		//构造显示页面的数据	
 		CommentAndReplyVO commentAndReplyVO = new CommentAndReplyVO();
 		commentAndReplyVO.setCommentList(commentAndReplyDTOList);
 		commentAndReplyVO.setTotalPages(commentPage.getTotalPages());
 		commentAndReplyVO.setNowPage(page);
+		
+		
 		return commentAndReplyVO;
 	}
 
+	Function<CommentReply, ReplyerDTO> replyConversion = e -> {
+		ReplyerDTO replyerDTO= new ReplyerDTO();			
+		BeanUtils.copyProperties(e, replyerDTO);
+		replyerDTO.setToUserId(e.getToUser().getUserId());
+		replyerDTO.setToUserName(e.getToUser().getUserName());
+		replyerDTO.setToUserImage(e.getToUser().getUserImage());
+		
+		replyerDTO.setReplyerId(e.getReplyer().getUserId());
+		replyerDTO.setReplyerName(e.getReplyer().getUserName());
+		replyerDTO.setReplyerImage(e.getReplyer().getUserImage());
+		
+		if(replyStar != null && !replyStar.isEmpty()){
+			replyStar.forEach(e2 -> {
+			if(e2.getObjId() == replyerDTO.getReplyId())
+				replyerDTO.setStar(true);			
+			});
+			commentStar.remove(replyerDTO.getReplyId());
+		}
+		return replyerDTO;
+	};
+	
+	
 	Function<ArticleComment, CommentAndReplyDTO> myfunction = e -> {
 		CommentAndReplyDTO commentAndReply= new CommentAndReplyDTO();			
 		BeanUtils.copyProperties(e, commentAndReply);
+		List<ReplyerDTO> replyerDTOList 
+		  = e.getReplyList().stream().map(e1 -> {
+			  return replyConversion.apply(e1);
+		}).collect(Collectors.toList());
+		commentAndReply.setReplyList(replyerDTOList);
 		commentAndReply.setUserName(e.getReplyer().getUserName());
 		commentAndReply.setUserImage(e.getReplyer().getUserImage());
+		//如果点了赞设置为true
+		if(commentStar != null && !commentStar.isEmpty()){
+			commentStar.forEach(e2 -> {
+			if(e2.getObjId() == commentAndReply.getCommentId())
+				commentAndReply.setStar(true);			
+			});
+			 commentStar.remove(commentAndReply.getCommentId());
+			
+		}
 		return commentAndReply;
 	};
-
+		
 	
 	@Override
 	@Transactional

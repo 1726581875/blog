@@ -17,5 +17,7 @@ public interface CollectionService {
 	public void addInCollection(Integer userId,Integer articleId);
 	
 	public void removeFromCollection(List<Integer> collectionIds);
+	
+	public boolean isCollection(Integer userId , Integer articleId);
 
 }

@@ -88,4 +88,17 @@ public class UserStarServiceImpl implements UserStarService{
 		userStarRepository.deleteInBatch(list);
 	}
 
+
+	@Override
+	public List<UserStar> findUserStar(Integer userId,List<Integer> objIds, Integer starType) {
+           	
+		return userStarRepository.findAll(Specifications.where(e->{
+			 if(starType == CommonCode.ARTICLE)e.in("objId", objIds);
+			 if(starType == CommonCode.COMMENT)e.in("objId", objIds);
+			 if(starType == CommonCode.REPLY)e.in("objId", objIds);
+			 e.eq("userId", userId);
+			 e.eq("starType", starType);
+			}));
+	}
+
 }

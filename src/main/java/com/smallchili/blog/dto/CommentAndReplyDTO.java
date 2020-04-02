@@ -3,6 +3,8 @@ package com.smallchili.blog.dto;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Transient;
+
 import lombok.Data;
 
 /**
@@ -30,5 +32,6 @@ public class CommentAndReplyDTO {
 	
 	private List<ReplyerDTO> replyList;
 
+    private boolean isStar;
 	
 }

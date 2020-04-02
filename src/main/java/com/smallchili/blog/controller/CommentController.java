@@ -2,6 +2,8 @@ package com.smallchili.blog.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.smallchili.blog.dataobject.ArticleComment;
 import com.smallchili.blog.dataobject.CommentReply;
+import com.smallchili.blog.dataobject.UserDetail;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.service.CommentService;
@@ -46,10 +49,15 @@ public class CommentController extends BaseController{
 	 */
 	@GetMapping("/comments")
 	private Object findAllCommentAndReply(@RequestParam("articleId") Integer articleId,
-			                        @RequestParam(value = "page",defaultValue = "1") Integer page){
-		
-		CommentAndReplyVO commentAndReplyVO = commentService.findAllCommentByArticleId(articleId, page);
-		
+			                        @RequestParam(value = "page",defaultValue = "1") Integer page,
+			                        HttpSession session){
+		CommentAndReplyVO commentAndReplyVO;
+		UserDetail user = (UserDetail) session.getAttribute("user");
+		if(user == null){	
+		 commentAndReplyVO = commentService.findAllCommentByArticleId(articleId, page,0);
+		}else{
+		commentAndReplyVO = commentService.findAllCommentByArticleId(articleId, page,user.getUserId());
+		}
 		return new Result<CommentAndReplyVO>(EmUserError.SUCCESS, commentAndReplyVO);
 	}
 	

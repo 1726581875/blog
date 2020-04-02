@@ -12,7 +12,7 @@ import com.smallchili.blog.vo.CommentAndReplyVO;
 */
 public interface CommentService {
 
-	public CommentAndReplyVO findAllCommentByArticleId(Integer articleId , Integer page);
+	public CommentAndReplyVO findAllCommentByArticleId(Integer articleId , Integer page ,Integer userId);
 	
 	//public findCommentByUserId();
 	

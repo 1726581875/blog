@@ -1,6 +1,7 @@
 package com.smallchili.blog.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -81,6 +82,16 @@ public class CollectionServiceImpl implements CollectionService{
 			throw new UserException(EmUserError.ARTICLE_NOT_EXISI);
 		}
 		
+	}
+
+	@Override
+	public boolean isCollection(Integer userId, Integer articleId) {
+		
+		Optional<Collection> optional = collectionRepository.findOne(Specifications.where(e ->{
+			e.eq("userId", userId);
+			e.eq("articleId", articleId);
+		}));
+		return optional.isPresent() ? true : false;
 	}
 
 }
