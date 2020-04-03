@@ -20,4 +20,5 @@ public interface CollectionService {
 	
 	public boolean isCollection(Integer userId , Integer articleId);
 
+	public List<Collection> findUserCollection(Integer userId);
 }

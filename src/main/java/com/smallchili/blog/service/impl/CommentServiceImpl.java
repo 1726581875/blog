@@ -85,6 +85,8 @@ public class CommentServiceImpl implements CommentService{
 		    		e.getReplyList().stream().map(e2 -> e2.getReplyId()).collect(Collectors.toList())
 		    		));
 		   //拿到回复Id数组
+		     commentStar = null;
+		     replyStar = null;
 		    if(commentIds != null && !commentIds.isEmpty()){
 		     commentStar = userStarService.findUserStar(userId,commentIds, CommonCode.COMMENT);		   
 		    }
@@ -123,9 +125,10 @@ public class CommentServiceImpl implements CommentService{
 		if(replyStar != null && !replyStar.isEmpty()){
 			replyStar.forEach(e2 -> {
 			if(e2.getObjId() == replyerDTO.getReplyId())
-				replyerDTO.setStar(true);			
+				replyerDTO.setStar(true);
+			    commentStar.remove(replyerDTO.getReplyId());
 			});
-			commentStar.remove(replyerDTO.getReplyId());
+			
 		}
 		return replyerDTO;
 	};
@@ -145,9 +148,10 @@ public class CommentServiceImpl implements CommentService{
 		if(commentStar != null && !commentStar.isEmpty()){
 			commentStar.forEach(e2 -> {
 			if(e2.getObjId() == commentAndReply.getCommentId())
-				commentAndReply.setStar(true);			
+				commentAndReply.setStar(true);	
+			    commentStar.remove(commentAndReply.getCommentId());
 			});
-			 commentStar.remove(commentAndReply.getCommentId());
+			 
 			
 		}
 		return commentAndReply;

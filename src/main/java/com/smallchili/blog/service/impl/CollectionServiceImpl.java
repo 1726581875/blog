@@ -94,4 +94,12 @@ public class CollectionServiceImpl implements CollectionService{
 		return optional.isPresent() ? true : false;
 	}
 
+	@Override
+	public List<Collection> findUserCollection(Integer userId) {
+		
+		return collectionRepository.findAll(Specifications.where(e ->{
+			e.eq("userId", userId);
+		}));
+	}
+
 }

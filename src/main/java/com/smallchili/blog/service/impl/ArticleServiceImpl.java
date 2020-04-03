@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.smallchili.blog.dataobject.Article;
 import com.smallchili.blog.dataobject.UserDetail;
+import com.smallchili.blog.dataobject.UserStar;
 import com.smallchili.blog.dto.ArticleHeadMsgDTO;
 import com.smallchili.blog.dto.ArticleUserDetail;
 import com.smallchili.blog.error.EmUserError;
@@ -27,7 +28,9 @@ import com.smallchili.blog.repository.UserDetailRepository;
 import com.smallchili.blog.service.ArticleService;
 import com.smallchili.blog.service.CommentService;
 import com.smallchili.blog.service.ReplyService;
+import com.smallchili.blog.service.UserStarService;
 import com.smallchili.blog.utils.CommonCode;
+import com.smallchili.blog.utils.CommonUtil;
 import com.smallchili.blog.vo.ArticleHeadPageVO;
 
 import top.springdatajpa.zujijpa.Specifications;
@@ -50,7 +53,10 @@ public class ArticleServiceImpl implements ArticleService{
 	@Autowired
 	private CommentService commentService;
 	@Autowired
-	private ReplyService replyService;
+	private ReplyService replyService;	
+    
+    List<UserStar> userArticleStar;
+
     //配置页数
 	@Value("${pageSize}")
 	private Integer pageSize;
@@ -73,7 +79,7 @@ public class ArticleServiceImpl implements ArticleService{
 		   //调用查找方法,返回Page对象
 	 		Page<ArticleUserDetail> articleAndUserPage = articleUserDTORepository.findAll(spec, pageable);
 	 		//获取page对象的list
-	 		List<ArticleUserDetail> articleAndUserList = articleAndUserPage.getContent();
+	 		List<ArticleUserDetail> articleAndUserList = articleAndUserPage.getContent();	 		
             //转换为目标list,只保留需要的部分属性
 	        List<ArticleHeadMsgDTO> articleHeadList = copyListfromArticleUD(articleAndUserList);          
 	        //构造返回参数对象

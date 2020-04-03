@@ -31,5 +31,8 @@ public class ArticleHeadMsgDTO {
 	
 	private Date createTime;
 
+	private boolean isStar;
+	
+	private boolean isCollection;
 	
 }

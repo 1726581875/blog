@@ -31,6 +31,7 @@ import com.smallchili.blog.service.CollectionService;
 import com.smallchili.blog.service.UserStarService;
 import com.smallchili.blog.utils.CheckUtil;
 import com.smallchili.blog.utils.CommonCode;
+import com.smallchili.blog.utils.CommonUtil;
 import com.smallchili.blog.vo.ArticleHeadPageVO;
 import com.smallchili.blog.vo.Result;
 
@@ -54,6 +55,9 @@ public class AticleController extends BaseController{
 	
 	@Autowired
 	private CollectionService collectionService;
+	
+    @Autowired
+    CommonUtil commonUtil;
 	
 	@Value("${imagePath}")
 	private String IMAGE_PATH;
@@ -92,7 +96,11 @@ public class AticleController extends BaseController{
 		
 		//调用查找方法	
         ArticleHeadPageVO pageVO = articleService.findAll(spec, page);
-	 
+        
+        UserDetail user = (UserDetail) session.getAttribute("user");
+		if(user != null){
+        commonUtil.toSetStar(pageVO, user.getUserId());
+		}
 		return   new Result<ArticleHeadPageVO>(EmUserError.SUCCESS,pageVO);
 	}
 	
