@@ -27,27 +27,28 @@ public class CommonUtil {
 	@Autowired
 	private CollectionService collectionService;
     
-	public void toSetStar(ArticleHeadPageVO articleHeadPageVO,Integer userId){
-		System.out.println(userStarService);
+	public void toSetStar(ArticleHeadPageVO articleHeadPageVO,Integer userId){	
 		List<ArticleHeadMsgDTO> articleList = articleHeadPageVO.getContent();
-		List<Integer> articleIds = articleList.stream().map(e -> e.getArticleId()).collect(Collectors.toList());
-		articleIds.forEach(System.out::println);
+		List<Integer> articleIds = articleList.stream().map(e -> e.getArticleId()).collect(Collectors.toList());		
 		List<UserStar> starList = userStarService.findUserStar(userId, articleIds, CommonCode.ARTICLE);
 		List<Collection> collectionList = collectionService.findUserCollection(userId);
 		articleList.forEach(e ->{
+			if(articleIds != null){
 			starList.forEach(e2 -> {
 				if(e.getArticleId() == e2.getObjId()){
 					e.setStar(true);
 					starList.remove(e.getArticleId());
 				}				
 			});
+			}
+			if(collectionList != null){
 			collectionList.forEach(e2 -> {
 				if(e.getArticleId() == e2.getArticleId()){
 					e.setCollection(true);
 					starList.remove(e.getArticleId());
 				}	
 			});
-			
+			}
 		});
 	
 	}

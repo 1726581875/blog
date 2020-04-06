@@ -102,7 +102,7 @@ public class CommentController extends BaseController{
 		 comment.setArticleId(articleId);
 		 comment.setUserId(userId);
 	     comment.setCommentContent(content);
-	  ArticleComment articleComment = commentService.insertComment(comment);
+	     ArticleComment articleComment = commentService.insertComment(comment);
 	if(articleComment == null){
 		throw new UserException(EmUserError.UNKONW_ERROR);
 	}

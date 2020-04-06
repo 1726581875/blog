@@ -29,6 +29,7 @@ import com.smallchili.blog.service.ArticleService;
 import com.smallchili.blog.service.CommentService;
 import com.smallchili.blog.service.ReplyService;
 import com.smallchili.blog.service.UserStarService;
+import com.smallchili.blog.utils.ArticleUtil;
 import com.smallchili.blog.utils.CommonCode;
 import com.smallchili.blog.utils.CommonUtil;
 import com.smallchili.blog.vo.ArticleHeadPageVO;
@@ -81,7 +82,7 @@ public class ArticleServiceImpl implements ArticleService{
 	 		//获取page对象的list
 	 		List<ArticleUserDetail> articleAndUserList = articleAndUserPage.getContent();	 		
             //转换为目标list,只保留需要的部分属性
-	        List<ArticleHeadMsgDTO> articleHeadList = copyListfromArticleUD(articleAndUserList);          
+	        List<ArticleHeadMsgDTO> articleHeadList = ArticleUtil.conversionArticleList(articleAndUserList);          
 	        //构造返回参数对象
 	        ArticleHeadPageVO ArticlePageVO = new ArticleHeadPageVO();
 	        ArticlePageVO.setContent(articleHeadList);
@@ -91,30 +92,7 @@ public class ArticleServiceImpl implements ArticleService{
 	 		return ArticlePageVO;
 	}
 	
-	/**
-	 * @param List<ArticleUserDetail> 连表查的list(属性太多)
-	 * @return List<ArticleHeadMsgDTO> 目标list(只保留需要属性)
-	 */
-	public List<ArticleHeadMsgDTO> copyListfromArticleUD(List<ArticleUserDetail> list){
-		//java8的lambda表达式妙用，转换List<ArticleUserDetail> --> List<ArticlePageDTO>
-		List<ArticleHeadMsgDTO> articleDtoList = list.stream().map(e -> 			
-		   copyObject.apply(e)//调用下面的111行处的lambda函数
-		).collect(Collectors.toList()); 
-		
-		return articleDtoList;
-	}
 	
-	/**
-	 * copy单个对象
-	 * 作用：ArticleUserDetail给ArticlePageDTO的相同属性值赋
-	 * 使用 BeanUtils.copyProperties(source,target)
-	 */
-    Function<ArticleUserDetail,ArticleHeadMsgDTO> copyObject = (articleUserDetail) -> {
-	    	ArticleHeadMsgDTO articlePageDTO = new ArticleHeadMsgDTO();
-	    	 BeanUtils.copyProperties(articleUserDetail,articlePageDTO);
-	    	 BeanUtils.copyProperties(articleUserDetail.getUserDetail(),articlePageDTO);
-	    	 return articlePageDTO;
-	    };
 	    	
 
 	@Override
@@ -158,6 +136,9 @@ public class ArticleServiceImpl implements ArticleService{
 		}
 		if(article.getArticleStatus() != null){
 			updateArticle.setArticleStatus(article.getArticleStatus());
+		}
+		if(article.getCommentCount() != null){
+			updateArticle.setCommentCount(article.getCommentCount());
 		}
 		
 		return articleRepository.save(updateArticle);
@@ -208,8 +189,7 @@ public class ArticleServiceImpl implements ArticleService{
 			}
 		 }));
 		
-	if(!articleList.isEmpty() && articleList != null){
-		
+	if(!articleList.isEmpty() && articleList != null){		
 		//删除文章
 		articleRepository.deleteInBatch(articleList); 
 		//取出id的List
@@ -227,9 +207,12 @@ public class ArticleServiceImpl implements ArticleService{
 		//查出来
 		List<Article> articleList = articleRepository.findAll(Specifications.where(e->{
 		    e.in("articleId",ids);
-			if(flag==CommonCode.ARTICLE_DELETED)e.eq("articleStatus", CommonCode.ARTICLE_NORMAL);
-			if(flag==CommonCode.ARTICLE_NORMAL)e.eq("articleStatus", CommonCode.ARTICLE_DELETED);
-			if(flag==CommonCode.ARTICLE_DRAFT)e.eq("articleStatus", CommonCode.ARTICLE_DRAFT);
+			if(flag==CommonCode.ARTICLE_DELETED
+			  || flag==CommonCode.ARTICLE_DRAFT)e.eq("articleStatus", CommonCode.ARTICLE_NORMAL);
+			if(flag==CommonCode.ARTICLE_NORMAL){
+				e.or(e2 -> e2.eq("articleStatus", CommonCode.ARTICLE_DELETED)
+				             .eq("articleStatus", CommonCode.ARTICLE_DRAFT));						
+			}		
 		 }));
 		
 		articleList.stream().forEach(e -> e.setArticleStatus(flag));

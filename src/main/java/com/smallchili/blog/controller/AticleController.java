@@ -28,6 +28,7 @@ import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.service.ArticleService;
 import com.smallchili.blog.service.CollectionService;
+import com.smallchili.blog.service.StatisticalService;
 import com.smallchili.blog.service.UserStarService;
 import com.smallchili.blog.utils.CheckUtil;
 import com.smallchili.blog.utils.CommonCode;
@@ -56,6 +57,9 @@ public class AticleController extends BaseController{
 	@Autowired
 	private CollectionService collectionService;
 	
+	@Autowired
+	private StatisticalService  statisticalService;
+	
     @Autowired
     CommonUtil commonUtil;
 	
@@ -73,6 +77,7 @@ public class AticleController extends BaseController{
 	public Result<ArticleHeadPageVO> findArticlesByCondition(Article article,
 			                 @RequestParam(value = "page",defaultValue="1") Integer page,
 			                 HttpSession session){
+		System.out.println(article.getUserId());
 		//若状态不传,默认是查正常状态的文章
 	     if(article.getArticleStatus() == null)
 	    	 article.setArticleStatus(CommonCode.ARTICLE_NORMAL);
@@ -86,7 +91,7 @@ public class AticleController extends BaseController{
 	    		e.eq("articleType",article.getArticleType());
 	    	 }
 	    	 if(article.getUserId() != null){
-	    	 e.eq("userId", article.getUserId());
+	    	 e.eq("userId",article.getUserId());
 	    	 }
 	    	 if(article.getArticleTitle()!= null){
 	    		e.like("articleTitle", "%"+article.getArticleTitle()+"%");
@@ -99,12 +104,20 @@ public class AticleController extends BaseController{
         
         UserDetail user = (UserDetail) session.getAttribute("user");
 		if(user != null){
-        commonUtil.toSetStar(pageVO, user.getUserId());
+		if(pageVO.getContent() != null 
+				&& !pageVO.getContent().isEmpty()){		
+           commonUtil.toSetStar(pageVO, user.getUserId());
 		}
-		return   new Result<ArticleHeadPageVO>(EmUserError.SUCCESS,pageVO);
+		}
+		return  new Result<ArticleHeadPageVO>(EmUserError.SUCCESS,pageVO);
 	}
 	
-	
+	@GetMapping("/rank")
+	public Object findArticleRank(@RequestParam(value="page" ,defaultValue = "1") Integer page){
+		
+		ArticleHeadPageVO headPageVO = statisticalService.statisticalRank(page);
+		return  new Result<ArticleHeadPageVO>(EmUserError.SUCCESS,headPageVO);
+	}
 	
 	/**
 	 * 
@@ -237,10 +250,11 @@ public class AticleController extends BaseController{
 	 * @return
 	 */
 	@PostMapping("/delete/forever")
-	public Object foreverDeleteAreticle(@RequestParam("articleIds") List<Integer> articleIds ,
-			@RequestParam("userId") Integer userId,HttpSession session){
+	public Object foreverDeleteAreticle(@RequestParam("articleIds") List<Integer> articleIds 
+			,HttpSession session){
+		
 		UserDetail user = (UserDetail) session.getAttribute("user");
-		if(user==null || user.getUserId()!=userId){
+		if(user == null){
 			throw new UserException(EmUserError.USER_NOT_LOGIN);
 		}
 	  articleService.deleteArticle(articleIds, CommonCode.ARTICLE);

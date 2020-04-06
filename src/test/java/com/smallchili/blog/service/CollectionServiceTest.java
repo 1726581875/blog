@@ -23,7 +23,7 @@ public class CollectionServiceTest {
 	
 	@Test
 	public void findAll(){
-		collectionService.findUserCollection(1, 1).getContent().forEach(System.out::println);
+		collectionService.findUserCollection(2, 1).getContent().forEach(System.out::println);
 		
 	}
 	

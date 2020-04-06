@@ -16,6 +16,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.smallchili.blog.dataobject.Article;
 import com.smallchili.blog.dataobject.ArticleComment;
 import com.smallchili.blog.dataobject.CommentReply;
 import com.smallchili.blog.dataobject.UserStar;
@@ -24,6 +25,7 @@ import com.smallchili.blog.dto.ReplyerDTO;
 import com.smallchili.blog.error.EmUserError;
 import com.smallchili.blog.error.UserException;
 import com.smallchili.blog.repository.CommentRepository;
+import com.smallchili.blog.service.ArticleService;
 import com.smallchili.blog.service.CommentService;
 import com.smallchili.blog.service.ReplyService;
 import com.smallchili.blog.service.UserStarService;
@@ -49,13 +51,20 @@ public class CommentServiceImpl implements CommentService{
     private ReplyService replyService;
     @Autowired
     private UserStarService userStarService;
+    @Autowired 
+    ArticleService articleService;
   //配置页数
   	@Value("${pageSize}")
   	private Integer pageSize;
     
 	@Override
 	public ArticleComment insertComment(ArticleComment comment) {
-		
+		Article article = articleService.findById(comment.getArticleId());
+		if(article == null){
+			throw new UserException(EmUserError.ARTICLE_NOT_EXISI);
+		}
+		article.setCommentCount(article.getCommentCount() + 1);
+		articleService.updateArticle(article);
 		comment.setCommentStar(0);
 		comment.setCommentStatus(0);
 		return commentRepository.save(comment);
