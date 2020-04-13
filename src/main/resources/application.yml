@@ -19,7 +19,8 @@ spring:
       format_sql: true
         
 #配置每页多少条数据
-pageSize: 3
+pageSize: 10
 
 #配置图片文件位置
-imagePath: "F:/image/"
+#imagePath: /usr/java/image/
+imagePath: F:/image/

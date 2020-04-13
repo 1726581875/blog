@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,7 +76,7 @@ public class ArticleServiceImpl implements ArticleService{
 	public ArticleHeadPageVO findAll(Specification<ArticleUserDetail> spec, Integer page) {
 	      
 		 //构造页面条件 ,第几页,每页大小
-		    Pageable pageable = PageRequest.of(page-1,pageSize);	
+		    Pageable pageable = PageRequest.of(page-1,pageSize, Sort.Direction.DESC ,"createTime");	
 	 	
 		   //调用查找方法,返回Page对象
 	 		Page<ArticleUserDetail> articleAndUserPage = articleUserDTORepository.findAll(spec, pageable);

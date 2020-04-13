@@ -167,12 +167,12 @@ public class UserDetailController extends BaseController {
 			String filename = "/image/" + fileName;
 
 			// 更新数据库头像路径
-			UserDetail updateDetail = new UserDetail();
-			updateDetail.setUserId(user.getUserId());
-			updateDetail.setUserImage(filename);
+			//UserDetail updateDetail = new UserDetail();
+			userDetail.setUserId(user.getUserId());
+			userDetail.setUserImage(filename);
 
 			// 更新session里的值
-			UserDetail detail = userDetailService.updateUserDetail(updateDetail);
+			UserDetail detail = userDetailService.updateUserDetail(userDetail);
 			session.setAttribute("user", detail);
 
 			return new Result<UserDetail>(EmUserError.SUCCESS, detail);
