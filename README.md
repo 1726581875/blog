@@ -26,3 +26,5 @@ lombok插件
 4.项目右键 Run As ==> Springboot App 运行项目
 
 5.浏览器打开输入localhost:8080/blog/index.html
+
+前端代码：https://github.com/wa545464/Javue-Blog
