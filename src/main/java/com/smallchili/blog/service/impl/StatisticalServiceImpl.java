@@ -33,7 +33,6 @@ public class StatisticalServiceImpl implements StatisticalService{
 		//查出来
 	    articleUserList = articleUserDTORepository.findAll();
 	    //排序
-		articleUserList.forEach(System.out::println);
 		articleUserList.sort(Comparator.comparingInt(e -> 
 	    ((ArticleUserDetail) e).getArticleView()
 	    + ((ArticleUserDetail) e).getArticleStar()*10

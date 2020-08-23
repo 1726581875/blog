@@ -59,6 +59,7 @@ public class ArticleServiceTest {
 		Article article = new Article();
 		article.setArticleId(6);
 		article.setArticleTitle("我是chili");
+		article.setArticleContent("1123");
 		Article article2 = articleService.updateArticle(article);
 		System.out.println(article2);
 		

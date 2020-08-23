@@ -42,8 +42,8 @@ import top.springdatajpa.zujijpa.Specifications;
 @Service
 public class CommentServiceImpl implements CommentService{
 	
-	List<UserStar> commentStar;
-    List<UserStar> replyStar;
+	private List<UserStar> commentStar;
+    private List<UserStar> replyStar;
 	
 	@Autowired
     private CommentRepository commentRepository;	  

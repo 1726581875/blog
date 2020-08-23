@@ -217,8 +217,7 @@ public class UserLoginController extends BaseController{
 	}
 	
 	/**
-	 * 判断用户名是否存在
-	 * @param username
+	 * 判断用户是否登录
 	 * @return
 	 */
 	

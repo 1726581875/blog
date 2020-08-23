@@ -27,12 +27,22 @@ public interface ArticleService {
 	 * @return 包装过的文章信息
 	 */
 	public ArticleHeadPageVO findAll(Specification<ArticleUserDetail> spec,Integer page);
-		
+
+	/**
+	 * 2020/8/23
+	 * 插入和更新方法
+	 * @param article
+	 * @return
+	 */
+	public Article save(Article article);
+
 	/**
 	 * 新增文章信息
 	 * @param article
 	 * @return
+	 * @deprecated 2020/8/23 , 推荐使用save()方法代替
 	 */
+	@Deprecated
 	public Article inserArticle(Article article);
 	
 	
@@ -40,7 +50,9 @@ public interface ArticleService {
 	 * 修改文章信息
 	 * @param article
 	 * @return
+	 * @deprecated 2020/8/23 , 推荐使用save()方法代替
 	 */
+	@Deprecated
 	public Article updateArticle(Article article);
 	
 	/**

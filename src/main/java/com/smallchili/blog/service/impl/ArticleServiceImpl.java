@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.smallchili.blog.utils.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,9 +31,6 @@ import com.smallchili.blog.service.ArticleService;
 import com.smallchili.blog.service.CommentService;
 import com.smallchili.blog.service.ReplyService;
 import com.smallchili.blog.service.UserStarService;
-import com.smallchili.blog.utils.ArticleUtil;
-import com.smallchili.blog.utils.CommonCode;
-import com.smallchili.blog.utils.CommonUtil;
 import com.smallchili.blog.vo.ArticleHeadPageVO;
 
 import top.springdatajpa.zujijpa.Specifications;
@@ -57,7 +55,7 @@ public class ArticleServiceImpl implements ArticleService{
 	@Autowired
 	private ReplyService replyService;	
     
-    List<UserStar> userArticleStar;
+    private List<UserStar> userArticleStar;
 
     //配置页数
 	@Value("${pageSize}")
@@ -75,29 +73,56 @@ public class ArticleServiceImpl implements ArticleService{
 	@Override
 	public ArticleHeadPageVO findAll(Specification<ArticleUserDetail> spec, Integer page) {
 	      
-		 //构造页面条件 ,第几页,每页大小
-		    Pageable pageable = PageRequest.of(page-1,pageSize, Sort.Direction.DESC ,"createTime");	
+		   //构造页面条件 ,第几页,每页大小
+		    Pageable pageable = PageRequest.of(page-1, pageSize, Sort.Direction.DESC ,"createTime");
 	 	
 		   //调用查找方法,返回Page对象
 	 		Page<ArticleUserDetail> articleAndUserPage = articleUserDTORepository.findAll(spec, pageable);
 	 		//获取page对象的list
 	 		List<ArticleUserDetail> articleAndUserList = articleAndUserPage.getContent();	 		
             //转换为目标list,只保留需要的部分属性
-	        List<ArticleHeadMsgDTO> articleHeadList = ArticleUtil.conversionArticleList(articleAndUserList);          
-	        //构造返回参数对象
-	        ArticleHeadPageVO ArticlePageVO = new ArticleHeadPageVO();
-	        ArticlePageVO.setContent(articleHeadList);
-	        ArticlePageVO.setTotalPages(articleAndUserPage.getTotalPages());
-	        ArticlePageVO.setNowPage(page);
+	        List<ArticleHeadMsgDTO> articleHeadList = ArticleUtil.conversionArticleList(articleAndUserList);
+		   //构造返回参数对象
+	        ArticleHeadPageVO articlePageVO = new ArticleHeadPageVO();
+	        articlePageVO.setContent(articleHeadList);
+	        articlePageVO.setTotalPages(articleAndUserPage.getTotalPages());
+	        articlePageVO.setNowPage(page);
 	        
-	 		return ArticlePageVO;
+	 		return articlePageVO;
 	}
-	
-	
-	    	
 
+
+	/**
+	 * 2020/8/23 新增
+	 * @param article
+	 * @return
+	 */
 	@Override
-	public Article inserArticle(Article article) {
+	public Article save(Article article) {
+
+		if(article.getArticleId() != null){ //如果id不为空，表示是更新
+			Article saveArticle = findById(article.getArticleId());
+			CopyUtil.notNullCopy(article,saveArticle);
+			return  articleRepository.save(saveArticle);
+		}
+		//把点赞数和评论数为0
+		article.setArticleStar(0);
+		article.setCommentCount(0);
+		article.setArticleView(0);
+		return articleRepository.save(article);
+	}
+
+
+	/**
+	 *
+	 * @param article
+	 * @return
+	 * @deprecated
+	 * 2020/8/23 ,推荐使用save方法代替()
+	 */
+	@Override
+	@Deprecated
+	public Article inserArticle(Article article){
 		
 	 //判断一下用户是否存在
 	 Optional<UserDetail> userOptional = userDetailRepository.findById(article.getUserId());
@@ -113,16 +138,27 @@ public class ArticleServiceImpl implements ArticleService{
 	}
 
 
+	/**
+	 *
+	 * @param article
+	 * @return
+	 *
+	 * @deprecated 2020/8/23 , 推荐使用save()方法代替
+	 */
 	@Override
+	@Deprecated
 	public Article updateArticle(Article article) {
 		//先查
 		Optional<Article> optional = articleRepository.findById(article.getArticleId());
 		if(!optional.isPresent()){
 			throw new UserException(EmUserError.ARTICLE_NOT_EXISI);
 		}
-		
+
 		//选择性更新
-		Article updateArticle = optional.get(); 
+		Article updateArticle = optional.get();
+		CopyUtil.notNullCopy(article,updateArticle);
+
+		/*
 		if(article.getArticleTitle() != null){
 			updateArticle.setArticleTitle(article.getArticleTitle());
 		}
@@ -140,7 +176,7 @@ public class ArticleServiceImpl implements ArticleService{
 		}
 		if(article.getCommentCount() != null){
 			updateArticle.setCommentCount(article.getCommentCount());
-		}
+		}*/
 		
 		return articleRepository.save(updateArticle);
 	}

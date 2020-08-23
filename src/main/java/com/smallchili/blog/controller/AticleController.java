@@ -77,7 +77,7 @@ public class AticleController extends BaseController{
 	public Result<ArticleHeadPageVO> findArticlesByCondition(Article article,
 			                 @RequestParam(value = "page",defaultValue="1") Integer page,
 			                 HttpSession session){
-		System.out.println(article.getUserId());
+
 		//若状态不传,默认是查正常状态的文章
 	     if(article.getArticleStatus() == null)
 	    	 article.setArticleStatus(CommonCode.ARTICLE_NORMAL);
@@ -271,7 +271,7 @@ public class AticleController extends BaseController{
 	@PostMapping(value = "/image")
  public Object fileUpload(@RequestParam(value = "fileName") MultipartFile file, HttpServletRequest request) {
 	        if (file.isEmpty()) {
-	            System.out.println("文件为空空");
+	            System.out.println("文件为空");
 	        }
 	        String fileName = file.getOriginalFilename();  // 文件名
 	        String suffixName = fileName.substring(fileName.lastIndexOf("."));  // 后缀名

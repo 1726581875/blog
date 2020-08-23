@@ -77,8 +77,7 @@ Function<CommentReply, ReplyerDTO> funtion = e -> {
 	
 	@Override
 	public CommentReply inserCommentReply(CommentReply reply) {
-		
-		
+
 		reply.setReplyStar(0);
 		reply.setReplyStatus(0);
 		return replyRepository.save(reply);
